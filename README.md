@@ -1,4 +1,4 @@
-# ZXCStream for Android
+# ZeXStream for Android
 
 A native Kotlin Android application that opens `https://zxcstream.com/` in a
 WebView. It does not bypass authentication, DRM, paywalls, provider restrictions,
