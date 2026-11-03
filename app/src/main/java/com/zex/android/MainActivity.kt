@@ -37,6 +37,7 @@ class MainActivity : Activity() {
     private lateinit var web: WebView
     private lateinit var progress: ProgressBar
     private lateinit var glassBar: LinearLayout
+    private lateinit var playbackFallbackButton: TextView
     private val uiHandler = Handler(Looper.getMainLooper())
     private val hideGlassBarRunnable = Runnable { hideGlassBar() }
     private var revealingGlassBarTouch = false
@@ -72,6 +73,7 @@ class MainActivity : Activity() {
                         addGithubToStayConnectedPopup()
                         hideUnsupportedPwaInstallOption()
                         updatePageChrome(url)
+                        if (isMovieDetailsPage(Uri.parse(url))) detectPlaybackUnavailable()
                     }
                 }
 
@@ -142,6 +144,23 @@ class MainActivity : Activity() {
         val barParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(62), Gravity.TOP or Gravity.CENTER_HORIZONTAL)
         barParams.setMargins(margin, dp(20), margin, 0)
         root.addView(glassBar, barParams)
+        playbackFallbackButton = TextView(this).apply {
+            text = "Playback issue? Open this page in Chrome"
+            textSize = 14f
+            gravity = Gravity.CENTER
+            setTextColor(Color.WHITE)
+            setPadding(dp(18), dp(12), dp(18), dp(12))
+            background = rounded(Color.argb(238, 32, 32, 38), dp(18), Color.argb(150, 255, 255, 255))
+            elevation = dp(8).toFloat()
+            visibility = View.GONE
+            isFocusable = true
+            contentDescription = "Open this title in Chrome if playback fails in the app"
+            setOnClickListener { openCurrentPageInBrowser() }
+        }
+        val fallbackParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+            Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL)
+        fallbackParams.setMargins(dp(20), 0, dp(20), dp(94))
+        root.addView(playbackFallbackButton, fallbackParams)
         setContentView(root)
         setupNotifications()
         web.loadUrl(homeUrl)
@@ -166,6 +185,28 @@ class MainActivity : Activity() {
         if (first in setOf("movie", "tv", "series") && segments.size > 1) return true
         val hasItemId = uri.queryParameterNames.any { it.lowercase() in setOf("id", "video", "title_id") }
         return hasItemId && first in setOf("movie", "tv", "series", "watch")
+    }
+
+    private fun detectPlaybackUnavailable(retriesRemaining: Int = 6) {
+        web.evaluateJavascript(
+            "(document.body?.innerText || '').toLowerCase().includes('title unavailable') || " +
+                "(document.body?.innerText || '').toLowerCase().includes('currently unavailable for playback')"
+        ) { result ->
+            if (result == "true") {
+                playbackFallbackButton.visibility = View.VISIBLE
+            } else if (retriesRemaining > 0) {
+                uiHandler.postDelayed({ detectPlaybackUnavailable(retriesRemaining - 1) }, 900)
+            }
+        }
+    }
+
+    private fun openCurrentPageInBrowser() {
+        val uri = web.url?.let(Uri::parse) ?: return
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, uri).setPackage("com.android.chrome"))
+        } catch (_: ActivityNotFoundException) {
+            try { startActivity(Intent(Intent.ACTION_VIEW, uri)) } catch (_: ActivityNotFoundException) { }
+        }
     }
 
     private fun showGlassBar(requestFocus: Boolean) {
@@ -290,7 +331,7 @@ class MainActivity : Activity() {
         addView(glassAction("↻", "Reload", compact) { web.reload() })
         addView(glassAction("←", "Back", compact) { if (web.canGoBack()) web.goBack() else toast("Press Back again to exit") })
         if (!compact) addView(TextView(this@MainActivity).apply {
-            text = "ANDROID  ·  V0.2"; textSize = 11f; letterSpacing = .12f
+            text = "ANDROID  ·  V0.3"; textSize = 11f; letterSpacing = .12f
             setTextColor(Color.rgb(225, 225, 230)); gravity = Gravity.CENTER
         }, LinearLayout.LayoutParams(-2, -1).apply { marginStart = dp(12); marginEnd = dp(8) })
     }

@@ -1,4 +1,4 @@
-# ZEX Android V0.2
+# ZEX Android V0.3
 
 ZEX is a lightweight Android WebView app for `https://zxcstream.com/`, with a red ZEX identity and a translucent glass control bar. The app respects the site's own sign-in, playback, DRM, provider, and access rules.
 
@@ -10,6 +10,7 @@ ZEX is a lightweight Android WebView app for `https://zxcstream.com/`, with a re
 - The WebView uses the site's responsive viewport without overview zoom, so its layout can use the available phone or TV width. The compact ZEX wordmark stays on one line on phones.
 - The site-only PWA `Install` item is hidden inside the Android WebView, where browser install prompts aren't supported. The website's normal install option remains available in a supported browser.
 - Web video fullscreen is supported. HTTPS-only navigation stays within `zxcstream.com`; other HTTPS links are handed to the system browser.
+- If the website reports that playback is unavailable inside WebView, ZEX shows an **Open this page in Chrome** fallback. This helps when the same page plays in Chrome; the site's player/source still determines whether the title is actually available.
 - In the site's "Stay Connected" popup, ZEX links to its Discord server, Telegram channel, and GitHub repository.
 - A low-power daily reminder and GitHub release check run on a 24-hour WorkManager interval. A newer release gets one update alert; installing an app update also shows a confirmation notification. Android may defer daily background work, and notifications require the user's notification permission.
 
@@ -22,7 +23,7 @@ Requirements: JDK 17, Android SDK Platform 35, and Android Build Tools 35.x.
 .\gradlew.bat assembleRelease
 ```
 
-The debug APK is `app/build/outputs/apk/debug/app-debug.apk`. GitHub Actions builds the APK on pushes and publishes a downloadable APK when the `v0.2` tag is pushed. Unsigned release APKs are for sideloading/testing; sign with your own private keystore before distribution.
+The debug APK is `app/build/outputs/apk/debug/app-debug.apk`. GitHub Actions builds the APK on pushes and publishes a downloadable APK when the `v0.3` tag is pushed. Unsigned release APKs are for sideloading/testing; sign with your own private keystore before distribution.
 
 ## Install on Android TV
 
@@ -41,7 +42,7 @@ ZEX displays the quality options supplied by the website's player/source. The ap
 
 ## Version
 
-Application label: **ZEX Android V0.2** · `versionName`: **0.2** · `versionCode`: **2**
+Application label: **ZEX Android V0.3** · `versionName`: **0.3** · `versionCode`: **3**
 
 ## ZEX for Windows PC
 
@@ -60,6 +61,6 @@ The SwiftUI/WebKit test build targets iOS 14 and newer and is packaged as an uns
 
 ## Releases
 
-- [Android V0.2 APK](https://github.com/syedtayyabdev01/zex/releases/tag/v0.2)
+- [Android V0.3 APK](https://github.com/syedtayyabdev01/zex/releases/tag/v0.3) (available after build completes)
 - [Windows PC V0.1.0 ZIP](https://github.com/syedtayyabdev01/zex/releases/tag/pc-v0.1.0)
 - [iPhone unsigned test IPA](https://github.com/syedtayyabdev01/zex/releases/tag/ios-v0.1.3) (available after the iOS GitHub Actions build succeeds)
