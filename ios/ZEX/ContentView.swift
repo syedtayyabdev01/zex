@@ -207,7 +207,7 @@ private final class WebNavigationDelegate: NSObject, WKNavigationDelegate {
         owner?.updateNavigationState()
     }
 
-    func webView(_ webView: WKWebView, webContentProcessDidTerminate: WKWebView) {
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         owner?.recoverFromWebContentTermination()
     }
 
