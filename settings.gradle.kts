@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ZXCStream"
+rootProject.name = "ZEX Android V0.2"
 include(":app")

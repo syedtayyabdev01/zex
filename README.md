@@ -1,61 +1,35 @@
-# ZEX for Android!
+# ZEX Android V0.2
 
-A native Kotlin Android application that opens `https://zxcstream.com/` in a WebView. It does not bypass authentication, DRM, paywalls, provider restrictions, or other website access controls.
+ZEX is a lightweight Android WebView app for `https://zxcstream.com/`, with a red ZEX identity and a translucent glass control bar. The app respects the site's own sign-in, playback, DRM, provider, and access rules.
 
-## Requirements
+## Android and Android TV
 
-- JDK 17
-- Android SDK Platform 35 and Android SDK Build-Tools 35.x
-- Gradle 8.9 (the Gradle wrapper is the recommended entry point)
-
-Open the project in Android Studio and allow it to install the required SDK components, or set `ANDROID_HOME` / `ANDROID_SDK_ROOT` to an installed SDK.
+- One APK supports phones, tablets, and Android TV. TV launch and touchscreen-optional support are declared in the manifest.
+- Use a TV remote's directional pad to focus the glass controls and the site's own controls. Play/pause media keys are passed to the page's active video element.
+- The app bar provides Home, Reload, and Back controls with visible remote focus treatment.
+- Web video fullscreen is supported. HTTPS-only navigation stays within `zxcstream.com`; other HTTPS links are handed to the system browser.
 
 ## Build
 
-From the project root:
+Requirements: JDK 17, Android SDK Platform 35, and Android Build Tools 35.x.
 
 ```powershell
 .\gradlew.bat assembleDebug
 .\gradlew.bat assembleRelease
-.\gradlew.bat bundleRelease
 ```
 
-Outputs are written under `app\build\outputs\apk\` and `app\build\outputs\bundle\`. A release build made without signing credentials is unsigned and must be signed before distribution.
+The debug APK is `app/build/outputs/apk/debug/app-debug.apk`. GitHub Actions builds the APK on pushes and publishes a downloadable APK when the `v0.2` tag is pushed. Unsigned release APKs are for sideloading/testing; sign with your own private keystore before distribution.
 
-## Signing a release
+## Install on Android TV
 
-Create a private Android upload/release keystore and keep it outside source control. Set these environment variables in the build shell:
+Download the debug APK from the GitHub Actions run (or the release APK), then install it using Android Studio/ADB or a trusted sideloading method. In the app, use the TV remote D-pad for navigation. Playback and provider support depend on the website and its embedded players.
 
-```powershell
-keytool -genkeypair -v -keystore 'C:\secure\zex-upload.jks' -alias zex -keyalg RSA -keysize 2048 -validity 10000
+## Security and privacy
 
-$env:ZEX_STORE_FILE = 'C:\secure\zex-upload.jks'
-$env:ZEX_STORE_PASSWORD = 'your-store-password'
-$env:ZEX_KEY_ALIAS = 'your-key-alias'
-$env:ZEX_KEY_PASSWORD = 'your-key-password'
-```
+- Only HTTPS is permitted; cleartext traffic and mixed content are disabled.
+- JavaScript and DOM storage are enabled for the website. Cookies are retained by WebView for site sessions.
+- File/content access and app backups are disabled. No credentials or signing keys belong in this repository.
 
-With all four variables set, the Gradle release variants are automatically signed, provided the Gradle configuration uses these variable names. If no variables are set, release outputs are unsigned.
+## Version
 
-Do not commit credentials or keystores. Play App Signing is recommended for Google Play distribution.
-
-## Security and behavior
-
-- Only HTTPS is allowed for the site; HTTP navigation to `zxcstream.com` is upgraded to HTTPS and cleartext networking is disabled.
-- Top-level navigation remains on `zxcstream.com` and its subdomains. Other HTTP(S) links open with an installed external handler; unsafe schemes are rejected.
-- JavaScript and DOM storage are enabled for the site.
-- Cookies, including third-party cookies needed by embedded providers, are retained by WebView.
-- App data backup and device transfer are disabled to protect session data.
-- File/content access, mixed content, and unrequested permissions are disabled.
-- SSL certificate errors are always cancelled.
-- HTML5 video uses WebView's media support, with immersive fullscreen and landscape orientation when requested by the page.
-
-## Validation checklist
-
-Use an emulator/device to verify website loading, login/session persistence, search and site navigation, playback/provider behavior, fullscreen video, back navigation and exit confirmation, offline/retry behavior, slow connections, background/foreground resume, and portrait/landscape/tablet layouts.
-
-Playback and provider availability remain subject to the website's own support and policies.
-
-## Open Source
-
-ZEX is a free and open-source project. Contributions, suggestions, and feedback are welcome.
+Application label: **ZEX Android V0.2** · `versionName`: **0.2** · `versionCode`: **2**
