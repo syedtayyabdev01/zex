@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "com.zex.android"
         minSdk = 23
-        targetSdk = 28
+        targetSdk = 33
         versionCode = 2
         versionName = "0.2"
     }
@@ -25,4 +25,8 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
+}
+
+dependencies {
+    implementation("androidx.work:work-runtime-ktx:2.11.2")
 }

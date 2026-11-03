@@ -1,6 +1,7 @@
 package com.zex.android
 
 import android.annotation.SuppressLint
+import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -8,11 +9,12 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Build
+import android.content.pm.PackageManager
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.webkit.CookieManager
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -23,6 +25,10 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import java.util.concurrent.TimeUnit
 
 class MainActivity : Activity() {
     private lateinit var web: WebView
@@ -35,7 +41,6 @@ class MainActivity : Activity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.statusBarColor = Color.rgb(15, 15, 18)
         window.navigationBarColor = Color.rgb(15, 15, 18)
 
@@ -97,16 +102,20 @@ class MainActivity : Activity() {
         barParams.setMargins(margin, dp(20), margin, 0)
         root.addView(glassBar, barParams)
         setContentView(root)
+        setupNotifications()
         web.loadUrl(homeUrl)
     }
 
     private fun createGlassBar(): LinearLayout = LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
-        setPadding(dp(14), dp(6), dp(14), dp(6))
-        background = rounded(Color.argb(214, 28, 28, 33), dp(32), Color.argb(115, 255, 255, 255))
-        elevation = dp(12).toFloat()
         val compact = resources.configuration.screenWidthDp < 600
+        setPadding(dp(if (compact) 10 else 14), dp(6), dp(if (compact) 10 else 14), dp(6))
+        background = GradientDrawable(
+            GradientDrawable.Orientation.TOP_BOTTOM,
+            intArrayOf(Color.argb(142, 158, 159, 166), Color.argb(125, 45, 45, 52), Color.argb(148, 20, 20, 25))
+        ).apply { cornerRadius = dp(32).toFloat(); setStroke(dp(1), Color.argb(150, 255, 255, 255)) }
+        elevation = dp(5).toFloat()
         val brand = TextView(this@MainActivity).apply {
             text = "ZEX"; textSize = 24f; typeface = android.graphics.Typeface.DEFAULT_BOLD
             setTextColor(Color.rgb(229, 9, 20)); gravity = Gravity.CENTER
@@ -114,28 +123,50 @@ class MainActivity : Activity() {
             setOnClickListener { web.loadUrl(homeUrl) }
             isFocusable = true; isFocusableInTouchMode = false
         }
-        addView(brand, LinearLayout.LayoutParams(dp(if (compact) 44 else 70), -1))
+        addView(brand, LinearLayout.LayoutParams(dp(if (compact) 54 else 70), -1))
         val divider = View(this@MainActivity).apply { setBackgroundColor(Color.argb(60, 255, 255, 255)) }
         addView(divider, LinearLayout.LayoutParams(dp(1), dp(30)).apply { marginStart = dp(8); marginEnd = dp(8) })
-        addView(glassAction("⌂", "Home") { web.loadUrl(homeUrl) })
-        addView(glassAction("↻", "Reload") { web.reload() })
-        addView(glassAction("←", "Back") { if (web.canGoBack()) web.goBack() else toast("Press Back again to exit") })
+        addView(glassAction("⌂", "Home", compact) { web.loadUrl(homeUrl) })
+        addView(glassAction("↻", "Reload", compact) { web.reload() })
+        addView(glassAction("←", "Back", compact) { if (web.canGoBack()) web.goBack() else toast("Press Back again to exit") })
         if (!compact) addView(TextView(this@MainActivity).apply {
             text = "ANDROID  ·  V0.2"; textSize = 11f; letterSpacing = .12f
             setTextColor(Color.rgb(225, 225, 230)); gravity = Gravity.CENTER
         }, LinearLayout.LayoutParams(-2, -1).apply { marginStart = dp(12); marginEnd = dp(8) })
     }
 
-    private fun glassAction(symbol: String, label: String, action: () -> Unit) = TextView(this).apply {
-        text = symbol; textSize = 22f; gravity = Gravity.CENTER; setTextColor(Color.WHITE)
+    private fun glassAction(symbol: String, label: String, compact: Boolean, action: () -> Unit) = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER
+        minimumWidth = dp(if (compact) 42 else 74)
+        setPadding(dp(if (compact) 8 else 10), 0, dp(if (compact) 8 else 10), 0)
         contentDescription = label; isFocusable = true; isFocusableInTouchMode = false
-        background = rounded(Color.TRANSPARENT, dp(18), Color.TRANSPARENT)
-        setPadding(dp(12), 0, dp(12), 0)
+        background = rounded(Color.TRANSPARENT, dp(20), Color.TRANSPARENT)
+        addView(TextView(this@MainActivity).apply {
+            text = symbol; textSize = 21f; gravity = Gravity.CENTER; setTextColor(Color.WHITE)
+        }, LinearLayout.LayoutParams(-2, -1))
+        if (!compact) addView(TextView(this@MainActivity).apply {
+            text = label; textSize = 13f; setTextColor(Color.WHITE)
+        }, LinearLayout.LayoutParams(-2, -1).apply { marginStart = dp(7) })
         setOnClickListener { action() }
         setOnFocusChangeListener { view, focused ->
             view.background = rounded(if (focused) Color.argb(72, 255, 255, 255) else Color.TRANSPARENT,
-                dp(18), if (focused) Color.argb(180, 255, 255, 255) else Color.TRANSPARENT)
-            view.scaleX = if (focused) 1.08f else 1f; view.scaleY = if (focused) 1.08f else 1f
+                dp(20), if (focused) Color.argb(210, 255, 255, 255) else Color.TRANSPARENT)
+            view.scaleX = if (focused) 1.04f else 1f; view.scaleY = if (focused) 1.04f else 1f
+        }
+    }
+
+    private fun setupNotifications() {
+        ZexNotifications.createChannel(this)
+        val reminder = PeriodicWorkRequestBuilder<DailyNotificationWorker>(24, TimeUnit.HOURS).build()
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            "zex_daily_reminder_and_update_check", ExistingPeriodicWorkPolicy.KEEP, reminder
+        )
+        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            val preferences = getSharedPreferences("zex_notifications", MODE_PRIVATE)
+            if (!preferences.getBoolean("permission_requested", false)) {
+                preferences.edit().putBoolean("permission_requested", true).apply()
+                requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1204)
+            }
         }
     }
 

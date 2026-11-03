@@ -8,6 +8,7 @@ ZEX is a lightweight Android WebView app for `https://zxcstream.com/`, with a re
 - Use a TV remote's directional pad to focus the glass controls and the site's own controls. Play/pause media keys are passed to the page's active video element.
 - The app bar provides Home, Reload, and Back controls with visible remote focus treatment.
 - Web video fullscreen is supported. HTTPS-only navigation stays within `zxcstream.com`; other HTTPS links are handed to the system browser.
+- A low-power daily reminder and GitHub release check run on a 24-hour WorkManager interval. A newer release gets one update alert; installing an app update also shows a confirmation notification. Android may defer daily background work, and notifications require the user's notification permission.
 
 ## Build
 
@@ -29,6 +30,7 @@ Download the debug APK from the GitHub Actions run (or the release APK), then in
 - Only HTTPS is permitted; cleartext traffic and mixed content are disabled.
 - JavaScript and DOM storage are enabled for the website. Cookies are retained by WebView for site sessions.
 - File/content access and app backups are disabled. No credentials or signing keys belong in this repository.
+- Glass panels use a translucent gradient and thin highlight border without live blur or continuous animation, keeping rendering lightweight.
 
 ## Version
 
