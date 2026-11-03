@@ -12,7 +12,7 @@ struct ContentView: View {
             HStack(spacing: 12) {
                 Text("ZEX")
                     .font(.system(size: 22, weight: .heavy, design: .rounded))
-                    .foregroundStyle(Color(red: 0.90, green: 0.04, blue: 0.08))
+                    .foregroundColor(Color(red: 0.90, green: 0.04, blue: 0.08))
                     .padding(.horizontal, 8)
 
                 Rectangle()
@@ -26,15 +26,19 @@ struct ContentView: View {
                 Spacer(minLength: 4)
                 Text("iOS TEST")
                     .font(.system(size: 10, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.58))
+                    .foregroundColor(Color.white.opacity(0.58))
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .background {
+            .background(
                 RoundedRectangle(cornerRadius: 22)
-                    .fill(.ultraThinMaterial)
-                    .overlay(RoundedRectangle(cornerRadius: 22).stroke(.white.opacity(0.24), lineWidth: 1))
-            }
+                    .fill(LinearGradient(
+                        gradient: Gradient(colors: [Color.white.opacity(0.25), Color.black.opacity(0.62)]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ))
+                    .overlay(RoundedRectangle(cornerRadius: 22).stroke(Color.white.opacity(0.24), lineWidth: 1))
+            )
             .padding(.horizontal, 14)
             .padding(.top, 8)
             .padding(.bottom, 8)
@@ -50,10 +54,10 @@ struct ContentView: View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(.white)
+                .foregroundColor(.white)
                 .frame(width: 38, height: 36)
-                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 13))
-                .overlay(RoundedRectangle(cornerRadius: 13).stroke(.white.opacity(0.14), lineWidth: 1))
+                .background(RoundedRectangle(cornerRadius: 13).fill(Color.white.opacity(0.08)))
+                .overlay(RoundedRectangle(cornerRadius: 13).stroke(Color.white.opacity(0.14), lineWidth: 1))
         }
         .buttonStyle(.plain)
         .accessibilityLabel(label)
@@ -65,6 +69,7 @@ final class ZEXWebView: ObservableObject {
     let view: WKWebView
     @Published private(set) var canGoBack = false
     private var navigationDelegate: WebNavigationDelegate!
+    private var uiDelegate: WebUIDelegate!
 
     init() {
         let configuration = WKWebViewConfiguration()
@@ -77,8 +82,9 @@ final class ZEXWebView: ObservableObject {
         view.backgroundColor = .black
         view.scrollView.backgroundColor = .black
         navigationDelegate = WebNavigationDelegate(owner: self)
+        uiDelegate = WebUIDelegate()
         view.navigationDelegate = navigationDelegate
-        view.uiDelegate = WebUIDelegate()
+        view.uiDelegate = uiDelegate
         load(homeURL)
     }
 

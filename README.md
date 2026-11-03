@@ -62,4 +62,4 @@ The SwiftUI/WebKit test build targets iOS 14 and newer and is packaged as an uns
 
 - [Android V0.2 APK](https://github.com/syedtayyabdev01/zex/releases/tag/v0.2)
 - [Windows PC V0.1.0 ZIP](https://github.com/syedtayyabdev01/zex/releases/tag/pc-v0.1.0)
-- [iPhone unsigned test IPA](https://github.com/syedtayyabdev01/zex/releases/tag/ios-v0.1.1) (available after the iOS GitHub Actions build succeeds)
+- [iPhone unsigned test IPA](https://github.com/syedtayyabdev01/zex/releases/tag/ios-v0.1.2) (available after the iOS GitHub Actions build succeeds)
