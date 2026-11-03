@@ -48,7 +48,7 @@ Application label: **ZEX Android V0.4** · `versionName`: **0.4** · `versionCod
 
 The Windows desktop app opens the responsive ZEX website in a resizable, keyboard-friendly window. It has a lightweight glass toolbar, browser back/home/reload controls, and fullscreen video support. Website playback and account features follow the website's own support.
 
-- Download `ZEX-PC-v0.1.0-win-x64.zip` from the [PC V0.1.0 release](https://github.com/syedtayyabdev01/zex/releases/tag/pc-v0.1.0), extract it, and run `ZEX.exe`.
+- Download `ZEX-PC-v0.1.1-win-x64.zip` from the [PC V0.1.1 release](https://github.com/syedtayyabdev01/zex/releases/tag/pc-v0.1.0), extract it, and run `ZEX.exe`.
 - Windows 10/11 x64 is targeted. Microsoft Edge WebView2 Runtime is required; it is commonly present with Edge, and the app offers Microsoft's installer page if missing.
 - Keyboard: `Alt+Left` back, `Alt+Right` forward, `Ctrl+H` home, `Ctrl+R` reload, `Esc` exit video fullscreen.
 - To build locally, install the .NET 10 SDK and run `dotnet publish desktop/Zex.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o desktop/publish`.
@@ -62,5 +62,12 @@ The SwiftUI/WebKit test build targets iOS 14 and newer and is packaged as an uns
 ## Releases
 
 - [Android V0.4 APK](https://github.com/syedtayyabdev01/zex/releases/tag/v0.4) (available after build completes)
-- [Windows PC V0.1.0 ZIP](https://github.com/syedtayyabdev01/zex/releases/tag/pc-v0.1.0)
-- [iPhone unsigned test IPA](https://github.com/syedtayyabdev01/zex/releases/tag/ios-v0.1.4) (available after the iOS GitHub Actions build succeeds)
+- [Windows PC V0.1.1 ZIP](https://github.com/syedtayyabdev01/zex/releases/tag/pc-v0.1.0)
+- [iPhone unsigned test IPA (TrollStore-compatible test build)](https://github.com/syedtayyabdev01/zex/releases/tag/ios-v0.1.5) (available after the iOS GitHub Actions build succeeds)
+
+
+## Stability update
+
+The desktop and iOS clients embed the ZEX website; they do not contain or operate its server, account system, media catalogue, or playback providers. Client-side retry and diagnostics can recover from network/browser failures, but server-side HTTP errors and unavailable titles must be fixed by the website/backend or its authorized content provider.
+
+Pull requests run Android, Windows, and iOS build workflows. Android release artifacts are unsigned APKs for testing; iOS artifacts are unsigned arm64 IPAs and require a compatible installation/signing method. Windows builds are self-contained x64 packages. Keep distributed packages below 100 MB where practical; do not add filler data to inflate app size.
