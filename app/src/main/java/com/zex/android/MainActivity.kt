@@ -116,6 +116,8 @@ class MainActivity : Activity() {
 
     private fun addGithubToStayConnectedPopup() {
         val githubUrl = JSONObject.quote("https://github.com/syedtayyabdev01/zex")
+        val discordUrl = JSONObject.quote("https://discord.gg/UHq3x5QjH")
+        val telegramUrl = JSONObject.quote("https://t.me/+MJvtkm6__Ag3ZWY0")
         val script = """
             (function() {
               if (window.__zexSocialObserver) return;
@@ -130,6 +132,15 @@ class MainActivity : Activity() {
                 var telegram = links.find(function(a) { return /(t\.me|telegram\.me)/i.test(a.href); });
                 var github = links.find(function(a) { return /facebook\.com/i.test(a.href); });
                 if (!discord || !telegram || !github) return false;
+
+                discord.href = $discordUrl;
+                discord.target = '_blank';
+                discord.rel = 'noopener noreferrer';
+                discord.setAttribute('aria-label', 'ZEX Discord server');
+                telegram.href = $telegramUrl;
+                telegram.target = '_blank';
+                telegram.rel = 'noopener noreferrer';
+                telegram.setAttribute('aria-label', 'ZEX Telegram channel');
 
                 github.href = $githubUrl;
                 github.target = '_blank';
