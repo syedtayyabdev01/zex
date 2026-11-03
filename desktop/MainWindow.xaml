@@ -34,7 +34,7 @@
                     <Button Content="⌂  Home" ToolTip="Go to ZEX home (Ctrl+H)" Click="Home_Click" />
                     <Button Content="↻  Reload" ToolTip="Reload (Ctrl+R)" Click="Reload_Click" />
                 </StackPanel>
-                <TextBlock Grid.Column="2" Text="ZEX  ·  PC 0.1" Foreground="#C6C6CC"
+                <TextBlock Grid.Column="2" Text="ZEX  ·  PC 0.1.1" Foreground="#C6C6CC"
                            FontSize="12" VerticalAlignment="Center" Margin="16,0,10,0" />
             </Grid>
         </Border>
