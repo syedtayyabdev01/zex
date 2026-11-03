@@ -24,7 +24,7 @@ struct ContentView: View {
                 toolbarButton("house", label: "Home") { browser.load(homeURL) }
                 toolbarButton("arrow.clockwise", label: "Reload") { browser.reload() }
                 Spacer(minLength: 4)
-                Text("iOS TEST")
+                Text("ZEX · iOS 0.1.3")
                     .font(.system(size: 10, weight: .semibold, design: .rounded))
                     .foregroundColor(Color.white.opacity(0.58))
             }
@@ -46,6 +46,37 @@ struct ContentView: View {
 
             BrowserView(browser: browser)
                 .background(Color.black)
+                .overlay(
+                    Group {
+                        if browser.isLoading {
+                            VStack(spacing: 12) {
+                                ProgressView().progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                Text("Loading ZEX…").font(.system(size: 14)).foregroundColor(.white.opacity(0.8))
+                            }
+                            .padding(22)
+                            .background(RoundedRectangle(cornerRadius: 18).fill(Color.black.opacity(0.78)))
+                        } else if let error = browser.loadError {
+                            VStack(spacing: 12) {
+                                Text("ZEX page couldn’t load")
+                                    .font(.system(size: 19, weight: .semibold))
+                                    .foregroundColor(.white)
+                                Text(error)
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.white.opacity(0.72))
+                                    .multilineTextAlignment(.center)
+                                Button("Try again") { browser.load(homeURL) }
+                                    .padding(.horizontal, 20)
+                                    .padding(.vertical, 10)
+                                    .background(RoundedRectangle(cornerRadius: 12).fill(Color.white.opacity(0.14)))
+                                    .foregroundColor(.white)
+                            }
+                            .padding(24)
+                            .frame(maxWidth: 360)
+                            .background(RoundedRectangle(cornerRadius: 20).fill(Color.black.opacity(0.84)))
+                            .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color.white.opacity(0.18), lineWidth: 1))
+                        }
+                    }
+                )
         }
         .background(Color.black.ignoresSafeArea())
     }
@@ -68,8 +99,11 @@ struct ContentView: View {
 final class ZEXWebView: ObservableObject {
     let view: WKWebView
     @Published private(set) var canGoBack = false
+    @Published private(set) var isLoading = false
+    @Published private(set) var loadError: String?
     private var navigationDelegate: WebNavigationDelegate!
     private var uiDelegate: WebUIDelegate!
+    private var loadTimeout: DispatchWorkItem?
 
     init() {
         let configuration = WKWebViewConfiguration()
@@ -85,18 +119,46 @@ final class ZEXWebView: ObservableObject {
         uiDelegate = WebUIDelegate()
         view.navigationDelegate = navigationDelegate
         view.uiDelegate = uiDelegate
-        load(homeURL)
     }
 
-    func load(_ url: URL) { view.load(URLRequest(url: url)) }
-    func reload() { view.reload() }
+    func load(_ url: URL) {
+        beginNavigation()
+        view.load(URLRequest(url: url))
+    }
+
+    func beginNavigation() {
+        loadTimeout?.cancel()
+        isLoading = true
+        loadError = nil
+        let timeout = DispatchWorkItem { [weak self] in
+            guard let self, self.isLoading else { return }
+            self.isLoading = false
+            self.loadError = "The website did not respond in time. Check your connection and retry."
+        }
+        loadTimeout = timeout
+        DispatchQueue.main.asyncAfter(deadline: .now() + 25, execute: timeout)
+    }
+
+    func reload() { load(view.url ?? homeURL) }
     func goBack() { if view.canGoBack { view.goBack() } }
     func updateNavigationState() { canGoBack = view.canGoBack }
+
+    func finishNavigation(error: Error? = nil) {
+        loadTimeout?.cancel()
+        isLoading = false
+        if let error = error as NSError?, error.code != NSURLErrorCancelled {
+            loadError = error.localizedDescription
+        }
+        updateNavigationState()
+    }
 }
 
 private struct BrowserView: UIViewRepresentable {
     let browser: ZEXWebView
-    func makeUIView(context: Context) -> WKWebView { browser.view }
+    func makeUIView(context: Context) -> WKWebView {
+        browser.load(homeURL)
+        return browser.view
+    }
     func updateUIView(_ uiView: WKWebView, context: Context) {}
 }
 
@@ -106,15 +168,19 @@ private final class WebNavigationDelegate: NSObject, WKNavigationDelegate {
     init(owner: ZEXWebView) { self.owner = owner }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        owner?.updateNavigationState()
+        owner?.finishNavigation()
+    }
+
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        owner?.beginNavigation()
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        owner?.updateNavigationState()
+        owner?.finishNavigation(error: error)
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        owner?.updateNavigationState()
+        owner?.finishNavigation(error: error)
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction,
