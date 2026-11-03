@@ -13,8 +13,8 @@ android {
         applicationId = "com.zex.android"
         minSdk = 23
         targetSdk = 33
-        versionCode = 3
-        versionName = "0.3"
+        versionCode = 4
+        versionName = "0.4"
     }
 
     buildTypes {

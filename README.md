@@ -1,4 +1,4 @@
-# ZEX Android V0.3
+# ZEX Android V0.4
 
 ZEX is a lightweight Android WebView app for `https://zxcstream.com/`, with a red ZEX identity and a translucent glass control bar. The app respects the site's own sign-in, playback, DRM, provider, and access rules.
 
@@ -23,7 +23,7 @@ Requirements: JDK 17, Android SDK Platform 35, and Android Build Tools 35.x.
 .\gradlew.bat assembleRelease
 ```
 
-The debug APK is `app/build/outputs/apk/debug/app-debug.apk`. GitHub Actions builds the APK on pushes and publishes a downloadable APK when the `v0.3` tag is pushed. Unsigned release APKs are for sideloading/testing; sign with your own private keystore before distribution.
+The debug APK is `app/build/outputs/apk/debug/app-debug.apk`. GitHub Actions builds the APK on pushes and publishes a downloadable APK when the `v0.4` tag is pushed. Unsigned release APKs are for sideloading/testing; sign with your own private keystore before distribution.
 
 ## Install on Android TV
 
@@ -42,7 +42,7 @@ ZEX displays the quality options supplied by the website's player/source. The ap
 
 ## Version
 
-Application label: **ZEX Android V0.3** · `versionName`: **0.3** · `versionCode`: **3**
+Application label: **ZEX Android V0.4** · `versionName`: **0.4** · `versionCode`: **4**
 
 ## ZEX for Windows PC
 
@@ -61,6 +61,6 @@ The SwiftUI/WebKit test build targets iOS 14 and newer and is packaged as an uns
 
 ## Releases
 
-- [Android V0.3 APK](https://github.com/syedtayyabdev01/zex/releases/tag/v0.3) (available after build completes)
+- [Android V0.4 APK](https://github.com/syedtayyabdev01/zex/releases/tag/v0.4) (available after build completes)
 - [Windows PC V0.1.0 ZIP](https://github.com/syedtayyabdev01/zex/releases/tag/pc-v0.1.0)
-- [iPhone unsigned test IPA](https://github.com/syedtayyabdev01/zex/releases/tag/ios-v0.1.3) (available after the iOS GitHub Actions build succeeds)
+- [iPhone unsigned test IPA](https://github.com/syedtayyabdev01/zex/releases/tag/ios-v0.1.4) (available after the iOS GitHub Actions build succeeds)

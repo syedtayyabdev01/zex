@@ -8,7 +8,7 @@
         android:allowBackup="false"
         android:banner="@drawable/tv_banner"
         android:icon="@drawable/ic_zex"
-        android:label="ZEX Android V0.3"
+        android:label="ZEX Android V0.4"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:usesCleartextTraffic="false">
         <activity

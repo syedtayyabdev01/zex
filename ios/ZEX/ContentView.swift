@@ -24,7 +24,7 @@ struct ContentView: View {
                 toolbarButton("house", label: "Home") { browser.load(homeURL) }
                 toolbarButton("arrow.clockwise", label: "Reload") { browser.reload() }
                 Spacer(minLength: 4)
-                Text("ZEX · iOS 0.1.3")
+                Text("ZEX · iOS 0.1.4")
                     .font(.system(size: 10, weight: .semibold, design: .rounded))
                     .foregroundColor(Color.white.opacity(0.58))
             }
@@ -111,6 +111,15 @@ final class ZEXWebView: ObservableObject {
         configuration.mediaTypesRequiringUserActionForPlayback = []
         configuration.websiteDataStore = .default()
         view = WKWebView(frame: .zero, configuration: configuration)
+        // Identify this embedded WebKit view as Safari so the site serves its
+        // full experience instead of a reduced embedded-browser shell.
+        let systemVersion = UIDevice.current.systemVersion
+        let majorVersion = Int(systemVersion.split(separator: ".").first ?? "15") ?? 15
+        let safariVersion = majorVersion >= 16 ? "605.1.15" : "604.1"
+        let deviceDescription = UIDevice.current.userInterfaceIdiom == .pad
+            ? "iPad; CPU OS \(systemVersion.replacingOccurrences(of: ".", with: "_"))"
+            : "iPhone; CPU iPhone OS \(systemVersion.replacingOccurrences(of: ".", with: "_"))"
+        view.customUserAgent = "Mozilla/5.0 (\(deviceDescription) like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/\(systemVersion) Mobile/15E148 Safari/\(safariVersion)"
         view.allowsBackForwardNavigationGestures = true
         view.isOpaque = false
         view.backgroundColor = .black

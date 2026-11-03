@@ -56,6 +56,11 @@ class MainActivity : Activity() {
             setBackgroundColor(Color.rgb(15, 15, 18))
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
+            // Keep Chromium's version but remove Android WebView's embedded-app
+            // markers so sites that work in Chrome serve the complete page.
+            settings.userAgentString = settings.userAgentString
+                .replace("; wv", "")
+                .replace("Version/4.0 ", "")
             settings.mediaPlaybackRequiresUserGesture = false
             settings.allowFileAccess = false
             settings.allowContentAccess = false
@@ -331,7 +336,7 @@ class MainActivity : Activity() {
         addView(glassAction("↻", "Reload", compact) { web.reload() })
         addView(glassAction("←", "Back", compact) { if (web.canGoBack()) web.goBack() else toast("Press Back again to exit") })
         if (!compact) addView(TextView(this@MainActivity).apply {
-            text = "ANDROID  ·  V0.3"; textSize = 11f; letterSpacing = .12f
+            text = "ANDROID  ·  V0.4"; textSize = 11f; letterSpacing = .12f
             setTextColor(Color.rgb(225, 225, 230)); gravity = Gravity.CENTER
         }, LinearLayout.LayoutParams(-2, -1).apply { marginStart = dp(12); marginEnd = dp(8) })
     }
