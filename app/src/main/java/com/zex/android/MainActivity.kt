@@ -84,7 +84,6 @@ class MainActivity : Activity() {
 
                 override fun onPageFinished(view: WebView, url: String) {
                     uiHandler.removeCallbacks(pageLoadTimeout)
-                    if (::networkErrorPanel.isInitialized) networkErrorPanel.visibility = View.GONE
                     val host = Uri.parse(url).host.orEmpty().lowercase()
                     if (host == "zxcstream.com" || host.endsWith(".zxcstream.com")) {
                         addGithubToStayConnectedPopup()
