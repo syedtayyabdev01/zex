@@ -181,7 +181,7 @@ public partial class MainWindow : Window
         NetworkErrorPanel.Visibility = Visibility.Collapsed;
         if (Browser.CoreWebView2 is null)
         {
-            _ = Window_Loaded(this, new RoutedEventArgs());
+            ShowRuntimeError();
             return;
         }
         Browser.CoreWebView2.Reload();
