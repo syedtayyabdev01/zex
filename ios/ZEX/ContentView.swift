@@ -154,7 +154,7 @@ final class ZEXWebView: ObservableObject {
 
     func handleHTTPStatus(_ statusCode: Int) {
         guard statusCode >= 400 else { return }
-        loadError = "The website returned HTTP \\(statusCode). Please check the connection or try again later."
+        loadError = "The website returned HTTP \(statusCode). Please check the connection or try again later."
     }
 
     func recoverFromWebContentTermination() {
@@ -213,7 +213,7 @@ private final class WebNavigationDelegate: NSObject, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
                  decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-        if let response = navigationResponse.response as? HTTPURLResponse {
+        if navigationResponse.isForMainFrame, let response = navigationResponse.response as? HTTPURLResponse {
             owner?.handleHTTPStatus(response.statusCode)
         }
         decisionHandler(.allow)
