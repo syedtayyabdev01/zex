@@ -152,6 +152,17 @@ final class ZEXWebView: ObservableObject {
     func goBack() { if view.canGoBack { view.goBack() } }
     func updateNavigationState() { canGoBack = view.canGoBack }
 
+    func handleHTTPStatus(_ statusCode: Int) {
+        guard statusCode >= 400 else { return }
+        loadError = "The website returned HTTP \\(statusCode). Please check the connection or try again later."
+    }
+
+    func recoverFromWebContentTermination() {
+        loadError = "The page stopped responding. Tap Try again to reload ZEX."
+        isLoading = false
+        updateNavigationState()
+    }
+
     func finishNavigation(error: Error? = nil) {
         loadTimeout?.cancel()
         isLoading = false
@@ -190,6 +201,22 @@ private final class WebNavigationDelegate: NSObject, WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         owner?.finishNavigation(error: error)
+    }
+
+    func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+        owner?.updateNavigationState()
+    }
+
+    func webView(_ webView: WKWebView, webContentProcessDidTerminate: WKWebView) {
+        owner?.recoverFromWebContentTermination()
+    }
+
+    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
+                 decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+        if let response = navigationResponse.response as? HTTPURLResponse {
+            owner?.handleHTTPStatus(response.statusCode)
+        }
+        decisionHandler(.allow)
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction,
