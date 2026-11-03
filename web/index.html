@@ -1,78 +1,107 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#09090d">
-  <meta name="description" content="ZEX — lightweight clients for Android, Windows and iPhone. Get official builds and setup information.">
-  <title>ZEX — Watch on your devices</title>
-  <style>
-    :root{color-scheme:dark;--bg:#09090d;--panel:#121219;--line:#272731;--muted:#a3a3b2;--red:#f04452;--red2:#a91228;--white:#f8f8fb}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 75% 5%,rgba(180,20,42,.2),transparent 34%),var(--bg);color:var(--white);font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    a{color:inherit;text-decoration:none}.wrap{width:min(1120px,calc(100% - 40px));margin:auto}
-    header{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07)}
-    .brand{display:flex;align-items:center;gap:11px;font-size:21px;font-weight:850;letter-spacing:.13em}.mark{width:35px;height:35px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(145deg,#ff5864,#a80c26);box-shadow:0 7px 28px #e11d2e40;font-weight:950}
-    nav{display:flex;gap:26px;color:#c4c4cf;font-size:14px}nav a:hover,.muted-link:hover{color:white}
-    .top-cta,.primary{display:inline-flex;align-items:center;justify-content:center;gap:9px;background:linear-gradient(110deg,#f04452,#bd1833);color:white;border-radius:999px;padding:11px 18px;font-weight:750;box-shadow:0 10px 30px #d21e3530;transition:transform .2s,filter .2s}.top-cta:hover,.primary:hover{transform:translateY(-2px);filter:brightness(1.08)}
-    .hero{padding:100px 0 76px;display:grid;grid-template-columns:1.1fr .9fr;gap:55px;align-items:center}
-    .eyebrow{display:inline-flex;align-items:center;gap:9px;color:#ff8992;font-size:12px;font-weight:800;letter-spacing:.17em;text-transform:uppercase}.dot{width:7px;height:7px;border-radius:50%;background:#ff5864;box-shadow:0 0 14px #ff5864}
-    h1{font-size:clamp(48px,7vw,82px);line-height:.99;letter-spacing:-.065em;margin:22px 0 22px;font-weight:900}h1 span{color:#ff5966}.lead{max-width:560px;color:#b6b6c3;font-size:18px;line-height:1.75}
-    .actions{display:flex;gap:13px;flex-wrap:wrap;margin-top:30px}.secondary{display:inline-flex;align-items:center;justify-content:center;border:1px solid #41414c;border-radius:999px;padding:10px 18px;font-weight:700;color:#e7e7ed}.secondary:hover{background:#ffffff0c}
-    .note{color:#81818f;font-size:12px;margin-top:18px}
-    .device-stage{position:relative;min-height:370px;display:grid;place-items:center}.glow{position:absolute;width:310px;height:310px;border-radius:50%;background:#c51c36;filter:blur(100px);opacity:.23}
-    .screen{position:relative;width:min(100%,390px);padding:13px;border:1px solid #ffffff24;border-radius:26px;background:linear-gradient(145deg,#24242d,#101016);box-shadow:0 35px 90px #0009;transform:rotate(3deg)}
-    .screen-top{display:flex;align-items:center;justify-content:space-between;padding:7px 7px 14px;color:#aaa;font-size:11px;letter-spacing:.12em}.screen-content{height:240px;border-radius:16px;background:radial-gradient(ellipse at 70% 15%,#a6223a99,transparent 48%),linear-gradient(140deg,#28121a,#111119 65%);display:flex;flex-direction:column;justify-content:flex-end;padding:23px;overflow:hidden}
-    .screen-content small{color:#ff9aa2;letter-spacing:.15em;font-weight:800}.screen-content strong{font-size:32px;line-height:1.05;letter-spacing:-.04em;margin-top:8px}.screen-content p{color:#c1b9c0;font-size:12px;margin-bottom:0}
-    .screen-bottom{display:flex;gap:8px;padding:13px 2px 1px}.mini{height:6px;border-radius:9px;background:#3b3b47;flex:1}.mini:first-child{background:#f04452}
-    .section{padding:48px 0 88px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:25px}.kicker{color:#ff7782;font-size:11px;letter-spacing:.18em;font-weight:850;text-transform:uppercase}h2{font-size:clamp(30px,4vw,43px);letter-spacing:-.045em;margin:8px 0 0}.section-head p{color:var(--muted);max-width:430px;margin:0}
-    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{background:linear-gradient(145deg,#17171f,#101016);border:1px solid var(--line);border-radius:20px;padding:25px;min-height:230px;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}.card:hover{border-color:#73313b;transform:translateY(-3px)}
-    .icon{width:43px;height:43px;border-radius:13px;background:#2a171d;color:#ff7883;display:grid;place-items:center;font-weight:900;font-size:19px}.card h3{font-size:20px;margin:17px 0 5px}.card p{color:var(--muted);font-size:14px;margin:0 0 22px}.card a{margin-top:auto;color:#ff7782;font-weight:750;font-size:14px}.card a:hover{color:#ffabb2}
-    .info{border:1px solid #34313a;background:linear-gradient(110deg,#17141a,#111117);border-radius:20px;padding:25px 28px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:25px}.info h3{margin:0 0 5px;font-size:19px}.info p{margin:0;color:var(--muted);font-size:14px}
-    footer{border-top:1px solid #24242d;padding:25px 0 36px;color:#888895;font-size:12px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-links{display:flex;gap:20px}
-    @media(max-width:800px){.hero{grid-template-columns:1fr;padding:72px 0 45px;gap:20px}.device-stage{min-height:310px}.cards{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}.info{grid-template-columns:1fr}.info .secondary{justify-self:start}}
-    @media(max-width:560px){.wrap{width:min(100% - 28px,1120px)}header{height:66px}nav{display:none}.top-cta{padding:9px 13px;font-size:12px}.hero{padding-top:60px}h1{font-size:54px}.lead{font-size:16px}.device-stage{min-height:275px}.screen-content{height:200px}.section{padding-bottom:60px}}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#09090d">
+<meta name="description" content="ZEX — discover films and watch titles from authorized public-domain collections.">
+<title>ZEX — Movies, series & more</title>
+<style>
+:root{color-scheme:dark;--bg:#08090d;--panel:#12141b;--panel2:#191c25;--line:#292d38;--muted:#9ba2b1;--text:#f7f8fb;--accent:#e6384e;--accent2:#ff6475;--gold:#e8bd77}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}button,a{color:inherit}a{text-decoration:none}button{cursor:pointer}.shell{width:min(1440px,100% - 56px);margin:auto}
+header{height:76px;display:flex;align-items:center;gap:38px;border-bottom:1px solid #ffffff0d;position:sticky;top:0;background:#090a0ff2;backdrop-filter:blur(18px);z-index:20;padding:0 max(28px,calc((100vw - 1440px)/2))}
+.logo{display:flex;align-items:center;gap:10px;font-size:23px;font-weight:950;letter-spacing:.18em}.logo-mark{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(145deg,#ff6374,#a60e2c);box-shadow:0 5px 22px #ed304b44;letter-spacing:0}
+nav{display:flex;align-items:center;gap:25px;color:#b8bdc8;font-size:14px}nav a:hover,nav a.active{color:#fff}.header-right{margin-left:auto;display:flex;align-items:center;gap:14px}.search{width:min(290px,26vw);height:40px;border:1px solid #303440;border-radius:10px;background:#11141b;display:flex;align-items:center;padding:0 12px;gap:9px}.search input{min-width:0;width:100%;border:0;outline:0;background:transparent;color:white}.search:focus-within{border-color:#d64a5c}.avatar{height:36px;width:36px;border-radius:50%;display:grid;place-items:center;background:#282d3a;color:#fff;font-weight:800}
+.hero{position:relative;min-height:500px;margin:22px 0 38px;border-radius:19px;overflow:hidden;background:#151923;isolation:isolate;display:flex;align-items:end}.hero-bg{position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,#090b10 0%,#090b10e8 30%,#090b1040 72%,#090b1020),linear-gradient(0deg,#090b10 0%,transparent 65%),url('https://images.unsplash.com/photo-1489599849927-2ee91 yang?auto=format&fit=crop&w=1800&q=85') center 38%/cover}.hero-bg:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 75% 30%,#c13d4a44,transparent 42%)}.hero-content{padding:55px;max-width:670px}.eyebrow{color:#ff8290;text-transform:uppercase;letter-spacing:.2em;font-size:11px;font-weight:850;display:flex;align-items:center;gap:9px}.live-dot{height:7px;width:7px;border-radius:50%;background:#f34b60;box-shadow:0 0 13px #f34b60}.hero h1{font-size:clamp(42px,6vw,76px);line-height:.99;letter-spacing:-.055em;margin:18px 0 16px}.hero p{color:#c1c4ce;max-width:520px;font-size:16px}.meta{display:flex;gap:13px;align-items:center;color:#d4d6de;font-size:13px;margin:18px 0}.tag{border:1px solid #ffffff36;padding:2px 8px;border-radius:5px;font-size:11px;color:#e3e4e9}.actions{display:flex;gap:11px;flex-wrap:wrap;margin-top:24px}.btn{border:0;border-radius:9px;padding:12px 19px;font-weight:800;display:inline-flex;align-items:center;gap:9px}.btn-primary{background:var(--accent);color:white}.btn-primary:hover{background:#f04c60}.btn-ghost{background:#ffffff17;border:1px solid #ffffff30;color:white}.btn:disabled{opacity:.45;cursor:not-allowed}
+.section{padding:20px 0 28px}.section-head{display:flex;justify-content:space-between;align-items:end;margin-bottom:17px;gap:20px}.section h2{font-size:23px;letter-spacing:-.035em;margin:0}.section-sub{color:var(--muted);font-size:13px;margin:4px 0 0}.text-btn{border:0;background:none;color:#ff8290;font-size:13px;font-weight:750}.rail{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px}.poster{min-width:0;cursor:pointer;transition:transform .2s}.poster:hover{transform:translateY(-5px)}.poster-art{position:relative;aspect-ratio:2/3;border-radius:11px;overflow:hidden;background:linear-gradient(145deg,#272b37,#11141b);border:1px solid #ffffff12}.poster-art img{width:100%;height:100%;object-fit:cover;display:block}.poster-art .fallback{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:15px;color:#b8bfcc;font-weight:800;background:radial-gradient(circle at 50% 25%,#62303c,#151721 70%)}.poster-title{font-weight:750;font-size:13px;margin:9px 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.poster-meta{font-size:11px;color:var(--muted)}.poster-play{position:absolute;inset:auto 10px 10px auto;background:#e6384e;color:white;border:0;width:38px;height:38px;border-radius:50%;font-size:15px;opacity:0;transform:translateY(5px);transition:.2s}.poster:hover .poster-play{opacity:1;transform:none}
+.genre-row{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 15px}.chip{border:1px solid #343946;background:#141720;color:#c4c9d3;padding:8px 13px;border-radius:99px;font-size:12px}.chip.active,.chip:hover{border-color:#e34b5e;background:#34161e;color:white}
+.status{border:1px solid #353947;background:linear-gradient(110deg,#151821,#10131a);padding:19px 21px;border-radius:13px;display:flex;gap:14px;align-items:flex-start;margin:20px 0 40px}.status-icon{color:var(--gold);font-size:20px}.status strong{display:block;font-size:14px}.status p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.grid-empty{grid-column:1/-1;color:var(--muted);padding:34px;border:1px dashed #343946;border-radius:12px;text-align:center}.loader{grid-column:1/-1;color:var(--muted);padding:30px;text-align:center}
+footer{border-top:1px solid #ffffff12;color:#7e8593;font-size:12px;padding:24px 0 35px;margin-top:24px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:#000c;backdrop-filter:blur(9px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}.overlay.open{display:flex}.dialog{width:min(850px,100%);max-height:90vh;overflow:auto;border:1px solid #373c49;border-radius:17px;background:#11141c;box-shadow:0 30px 100px #000b}.detail-layout{display:grid;grid-template-columns:240px 1fr;gap:25px;padding:26px}.detail-poster{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:10px;background:#242936}.detail-copy{padding:10px 8px 10px 0}.detail-copy h2{font-size:31px;line-height:1.1;margin:10px 0}.detail-copy p{color:#b5bbc7}.close{float:right;border:1px solid #3a3f4b;background:#202530;border-radius:50%;height:35px;width:35px;color:white;font-size:20px}.player-dialog{width:min(1000px,100%);padding:16px}.player-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.player-frame{width:100%;aspect-ratio:16/9;background:#030406;border-radius:10px;display:block}.player-note{font-size:12px;color:var(--muted);margin:10px 2px 0}
+@media(max-width:1050px){.rail{grid-template-columns:repeat(4,minmax(0,1fr))}.hero{min-height:440px}.hero-content{padding:40px}.shell{width:calc(100% - 40px)}}
+@media(max-width:700px){header{height:auto;min-height:68px;padding:12px 18px;gap:14px;flex-wrap:wrap}.logo{font-size:20px}nav{order:3;width:100%;overflow:auto;gap:20px;padding:4px 0 8px}.header-right{gap:8px}.search{width:min(48vw,230px)}.avatar{display:none}.shell{width:calc(100% - 28px)}.hero{min-height:460px;margin-top:14px}.hero-content{padding:27px}.hero-bg{background-position:58% center}.rail{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.section h2{font-size:20px}.detail-layout{grid-template-columns:100px 1fr;gap:15px;padding:17px}.detail-copy h2{font-size:23px}.detail-copy p{font-size:13px}}
+@media(max-width:420px){.rail{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{min-height:430px}.hero-content{padding:22px}.hero h1{font-size:43px}.section-head{align-items:start}.section-head .text-btn{white-space:nowrap}}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <a class="brand" href="#" aria-label="ZEX home"><span class="mark">Z</span><span>ZEX</span></a>
-      <nav aria-label="Main navigation"><a href="#downloads">Downloads</a><a href="#about">About</a><a href="https://github.com/syedtayyabdev01/zex" target="_blank" rel="noreferrer">Source code</a></nav>
-      <a class="top-cta" href="#downloads">Get the app <span aria-hidden="true">↗</span></a>
-    </header>
-    <main>
-      <section class="hero">
-        <div>
-          <div class="eyebrow"><span class="dot"></span> Your screens. One experience.</div>
-          <h1>Meet your<br><span>ZEX.</span></h1>
-          <p class="lead">A lightweight cross-device client experience for Android, Windows and iPhone. Choose your device, get the available build, and follow the setup notes.</p>
-          <div class="actions"><a class="primary" href="#downloads">Explore downloads <span aria-hidden="true">↓</span></a><a class="secondary" href="https://zxcstream.com/" target="_blank" rel="noreferrer">Open ZEX service ↗</a></div>
-          <p class="note">Client availability and playback features depend on the connected website and its authorized providers.</p>
-        </div>
-        <div class="device-stage" aria-label="ZEX app preview illustration">
-          <div class="glow"></div>
-          <div class="screen">
-            <div class="screen-top"><strong>ZEX PLAYER</strong><span>CONNECTED EXPERIENCE</span></div>
-            <div class="screen-content"><small>ONE EXPERIENCE</small><strong>Entertainment<br>on your terms.</strong><p>Designed for the screens you use every day.</p></div>
-            <div class="screen-bottom"><span class="mini"></span><span class="mini"></span><span class="mini"></span></div>
-          </div>
-        </div>
-      </section>
-      <section class="section" id="downloads">
-        <div class="section-head"><div><div class="kicker">Choose your platform</div><h2>Get ZEX on your device.</h2></div><p>Open the official GitHub release page to view available files, version notes and installation details.</p></div>
-        <div class="cards">
-          <article class="card"><div class="icon" aria-hidden="true">A</div><h3>Android & Android TV</h3><p>Phone, tablet and Android TV builds. Review the release notes and install guidance before sideloading.</p><a href="https://github.com/syedtayyabdev01/zex/releases/tag/v0.4" target="_blank" rel="noreferrer">View Android release ↗</a></article>
-          <article class="card"><div class="icon" aria-hidden="true">W</div><h3>Windows PC</h3><p>Windows 10/11 x64 desktop client. WebView2 Runtime may be required on your PC.</p><a href="https://github.com/syedtayyabdev01/zex/releases/tag/pc-v0.1.0" target="_blank" rel="noreferrer">View Windows release ↗</a></article>
-          <article class="card"><div class="icon" aria-hidden="true">i</div><h3>iPhone test build</h3><p>Unsigned iOS test package. Installation requires a compatible signing or sideloading method.</p><a href="https://github.com/syedtayyabdev01/zex/releases/tag/ios-v0.1.5" target="_blank" rel="noreferrer">View iOS release ↗</a></article>
-        </div>
-      </section>
-      <section class="section" id="about" style="padding-top:0">
-        <div class="info"><div><h3>Built in the open.</h3><p>Browse the source, report a problem, or check the latest releases on GitHub. ZEX clients display the connected service; they do not host its catalogue or playback servers.</p></div><a class="secondary" href="https://github.com/syedtayyabdev01/zex" target="_blank" rel="noreferrer">Visit GitHub ↗</a></div>
-      </section>
-    </main>
-    <footer><span>© <span id="year">2026</span> ZEX. Cross-device clients.</span><div class="footer-links"><a href="https://github.com/syedtayyabdev01/zex/releases" target="_blank" rel="noreferrer">All releases</a><a href="https://github.com/syedtayyabdev01/zex" target="_blank" rel="noreferrer">GitHub</a><a href="https://zxcstream.com/" target="_blank" rel="noreferrer">Service</a></div></footer>
-  </div>
-  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
-</body>
-</html>
+<header>
+<a class="logo" href="#" aria-label="ZEX home"><span class="logo-mark">Z</span>ZEX</a>
+<nav><a href="#home" class="active">Home</a><a href="#movies">Movies</a><a href="#classics">Classics</a><a href="#about">About</a></nav>
+<div class="header-right"><label class="search"><span>⌕</span><input id="searchInput" placeholder="Search movies..." aria-label="Search movies"></label><div class="avatar">Z</div></div>
+</header>
+<main class="shell" id="home">
+<section class="hero">
+<div class="hero-bg"></div>
+<div class="hero-content"><div class="eyebrow"><span class="live-dot"></span> Your next watch starts here</div>
+<h1>Stories worth<br>staying up for.</h1>
+<p>Discover films from open, public-domain collections in one clean streaming experience. Browse, search and play available titles.</p>
+<div class="meta"><span>Curated cinema</span><span>•</span><span>On-demand</span><span class="tag">ZEX ORIGINAL UI</span></div>
+<div class="actions"><button class="btn btn-primary" id="exploreBtn">▶ Explore movies</button><a class="btn btn-ghost" href="#about">How ZEX works</a></div></div>
+</section>
+<section class="section" id="movies"><div class="section-head"><div><h2>Popular in the Archive</h2><p class="section-sub">Publicly accessible film records, with playable files when available.</p></div><button class="text-btn" id="refreshBtn">Refresh ↻</button></div><div class="rail" id="popularRail"><div class="loader">Loading movie catalogue…</div></div></section>
+<section class="section" id="classics"><div class="section-head"><div><h2>Explore by collection</h2><p class="section-sub">Find a film by mood or category.</p></div></div><div class="genre-row"><button class="chip active" data-query="mediatype:movies AND year:[1920 TO 1970]">Classic cinema</button><button class="chip" data-query="mediatype:movies AND subject:horror">Horror</button><button class="chip" data-query="mediatype:movies AND subject:comedy">Comedy</button><button class="chip" data-query="mediatype:movies AND subject:animation">Animation</button><button class="chip" data-query="mediatype:movies AND subject:documentary">Documentary</button></div><div class="rail" id="collectionRail"><div class="loader">Finding more titles…</div></div></section>
+<section class="status" id="about"><div class="status-icon">ⓘ</div><div><strong>ZEX playback & content transparency</strong><p>This first build uses Internet Archive's public catalogue and only plays media files actually listed for an item. It does not extract streams from the two reference sites. Modern commercial movies, subscription shows and anime require a licensed catalogue/playback provider and its API credentials before they can be enabled.</p></div></section>
+</main>
+<footer class="shell"><span>© <span id="year"></span> ZEX. Discover more. Watch responsibly.</span><span>Metadata & media availability: <a href="https://archive.org/" target="_blank" rel="noreferrer">Internet Archive</a> · <a href="https://github.com/syedtayyabdev01/zex" target="_blank" rel="noreferrer">GitHub</a></span></footer>
+<div class="overlay" id="detailOverlay" role="dialog" aria-modal="true" aria-label="Movie details"><div class="dialog"><div class="detail-layout"><img class="detail-poster" id="detailPoster" alt=""><div class="detail-copy"><button class="close" data-close="detailOverlay" aria-label="Close">×</button><div class="eyebrow">ZEX TITLE DETAILS</div><h2 id="detailTitle"></h2><div class="meta" id="detailMeta"></div><p id="detailDescription"></p><div class="actions"><button class="btn btn-primary" id="detailPlay" disabled>▶ Check playback</button><a class="btn btn-ghost" id="archiveLink" target="_blank" rel="noreferrer">Archive record ↗</a></div><p class="player-note" id="detailStatus">Checking available media files…</p></div></div></div></div>
+<div class="overlay" id="playerOverlay" role="dialog" aria-modal="true" aria-label="Video player"><div class="dialog player-dialog"><div class="player-top"><strong id="playerTitle">Now playing</strong><button class="close" data-close="playerOverlay" aria-label="Close player">×</button></div><video class="player-frame" id="videoPlayer" controls playsinline preload="metadata"></video><p class="player-note">Playback is served from the item’s public Internet Archive file. Availability and rights are determined by the item record.</p></div></div>
+<script>
+const API='https://archive.org/advancedsearch.php';
+const $=s=>document.querySelector(s);
+const state={items:[],active:null,files:[]};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function posterUrl(id){return 'https://archive.org/services/img/'+encodeURIComponent(id)}
+async function searchArchive(query,rows=12){
+ const url=API+'?q='+encodeURIComponent(query)+'&fl[]='+encodeURIComponent('identifier')+'&fl[]='+encodeURIComponent('title')+'&fl[]='+encodeURIComponent('year')+'&fl[]='+encodeURIComponent('description')+'&sort[]='+encodeURIComponent('downloads desc')+'&rows='+rows+'&page=1&output=json';
+ const res=await fetch(url);if(!res.ok)throw new Error('Catalogue request failed');const data=await res.json();return data.response?.docs||[];
+}
+function renderRail(el,items){
+ el.innerHTML='';
+ if(!items.length){el.innerHTML='<div class="grid-empty">No titles found in this collection. Try another category.</div>';return}
+ items.forEach(item=>{
+ const title=item.title||'Untitled film',year=item.year||'Archive title',id=item.identifier;
+ const card=document.createElement('article');card.className='poster';card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label','View '+title);
+ card.innerHTML='<div class="poster-art"><div class="fallback">'+esc(title)+'</div><img loading="lazy" alt="" src="'+posterUrl(id)+'" onerror="this.remove()"><button class="poster-play" aria-label="View details">▶</button></div><div class="poster-title">'+esc(title)+'</div><div class="poster-meta">'+esc(year)+' · Archive</div>';
+ card.addEventListener('click',()=>openDetails(item));card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openDetails(item)}});
+ el.appendChild(card);
+ });
+}
+async function loadHome(){
+ $('#popularRail').innerHTML='<div class="loader">Loading movie catalogue…</div>';
+ $('#collectionRail').innerHTML='<div class="loader">Finding more titles…</div>';
+ try{
+ const [popular,classics]=await Promise.all([
+ searchArchive('mediatype:movies AND year:[1920 TO 1970]',12),
+ searchArchive('mediatype:movies AND collection:feature_films',12)
+ ]);
+ state.items=[...popular,...classics];renderRail($('#popularRail'),popular);renderRail($('#collectionRail'),classics);
+ }catch(err){$('#popularRail').innerHTML='<div class="grid-empty">Catalogue could not load right now. Check your connection and refresh.</div>';$('#collectionRail').innerHTML='';}
+}
+async function openDetails(item){
+ state.active=item;$('#detailTitle').textContent=item.title||'Untitled film';$('#detailPoster').src=posterUrl(item.identifier);$('#detailMeta').textContent=(item.year||'Year unknown')+' · Internet Archive';$('#detailDescription').textContent=typeof item.description==='string'?item.description.slice(0,700):'Public catalogue entry. Open the archive record for full item details.';$('#archiveLink').href='https://archive.org/details/'+encodeURIComponent(item.identifier);$('#detailPlay').disabled=true;$('#detailPlay').textContent='▶ Checking files…';$('#detailStatus').textContent='Checking whether a playable video file is available…';$('#detailOverlay').classList.add('open');state.files=[];
+ try{
+ const res=await fetch('https://archive.org/metadata/'+encodeURIComponent(item.identifier));const data=await res.json();
+ state.files=(data.files||[]).filter(f=>!f.source||f.source==='original').filter(f=>/\.(mp4|m4v|webm|ogv)$/i.test(f.name||'')).filter(f=>!f.name.startsWith('__'));
+ if(state.files.length){$('#detailPlay').disabled=false;$('#detailPlay').textContent='▶ Play available file';$('#detailStatus').textContent=state.files.length+' playable video file(s) listed in this item.'}
+ else{$('#detailPlay').textContent='No playable file';$('#detailStatus').textContent='This item has no supported video file listed. You can still inspect its archive record.'}
+ }catch(e){$('#detailPlay').textContent='Playback unavailable';$('#detailStatus').textContent='Could not verify playable files. Open the archive record to check availability.'}
+}
+function playActive(){
+ if(!state.active||!state.files.length)return;const file=state.files.find(f=>/\.mp4$/i.test(f.name))||state.files[0];const url='https://archive.org/download/'+encodeURIComponent(state.active.identifier)+'/'+file.name.split('/').map(encodeURIComponent).join('/');
+ $('#detailOverlay').classList.remove('open');$('#playerTitle').textContent=state.active.title||'Now playing';$('#playerOverlay').classList.add('open');const v=$('#videoPlayer');v.src=url;v.load();v.play().catch(()=>{});
+}
+function closeOverlay(id){$('#'+id).classList.remove('open');if(id==='playerOverlay'){const v=$('#videoPlayer');v.pause();v.removeAttribute('src');v.load()}}
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>closeOverlay(b.dataset.close)));
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)closeOverlay(o.id)}));
+$('#detailPlay').addEventListener('click',playActive);$('#refreshBtn').addEventListener('click',loadHome);$('#exploreBtn').addEventListener('click',()=>$('#movies').scrollIntoView({behavior:'smooth'}));
+document.querySelectorAll('.chip').forEach(chip=>chip.addEventListener('click',async()=>{
+ document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));chip.classList.add('active');const rail=$('#collectionRail');rail.innerHTML='<div class="loader">Loading collection…</div>';
+ try{const items=await searchArchive(chip.dataset.query,12);renderRail(rail,items)}catch(e){rail.innerHTML='<div class="grid-empty">Could not load this collection.</div>'}
+}));
+let searchTimer;$('#searchInput').addEventListener('input',e=>{
+ clearTimeout(searchTimer);const q=e.target.value.trim();if(!q){loadHome();return}
+ searchTimer=setTimeout(async()=>{const rail=$('#popularRail');rail.innerHTML='<div class="loader">Searching…</div>';$('#movies h2').textContent='Search results';
+ try{const items=await searchArchive('mediatype:movies AND title:('+q.replace(/[():]/g,' ') +')',18);renderRail(rail,items);$('#collectionRail').innerHTML=''}catch(err){rail.innerHTML='<div class="grid-empty">Search failed. Please try again.</div>'}},350);
+});
+$('#year').textContent=new Date().getFullYear();loadHome();
+</script>
+</body></html>
