@@ -31,6 +31,7 @@ public partial class MainWindow : Window
             core.Settings.IsStatusBarEnabled = false;
             core.NavigationStarting += Core_NavigationStarting;
             core.NavigationCompleted += Core_NavigationCompleted;
+            core.ProcessFailed += Core_ProcessFailed;
             core.NewWindowRequested += Core_NewWindowRequested;
             core.ContainsFullScreenElementChanged += Core_ContainsFullScreenElementChanged;
             core.Navigate(HomeUri.AbsoluteUri);
@@ -48,6 +49,7 @@ public partial class MainWindow : Window
 
     private void Core_NavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e)
     {
+        NetworkErrorPanel.Visibility = Visibility.Collapsed;
         if (!Uri.TryCreate(e.Uri, UriKind.Absolute, out var uri))
         {
             e.Cancel = true;
@@ -69,6 +71,12 @@ public partial class MainWindow : Window
     private async void Core_NavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
     {
         UpdateNavigationButtons();
+        if (!e.IsSuccess)
+        {
+            ShowNavigationError($"The page could not load ({e.WebErrorStatus}). Check your connection and retry.");
+            return;
+        }
+        NetworkErrorPanel.Visibility = Visibility.Collapsed;
         if (Browser.CoreWebView2 is null) return;
         try { await Browser.CoreWebView2.ExecuteScriptAsync(SocialLinksScript); }
         catch (InvalidOperationException) { }
@@ -155,6 +163,28 @@ public partial class MainWindow : Window
                 _inWebFullscreen = false;
             }
         });
+    }
+
+    private void Core_ProcessFailed(object? sender, CoreWebView2ProcessFailedEventArgs e)
+    {
+        Dispatcher.Invoke(() => ShowNavigationError("The embedded browser stopped unexpectedly. Retry to reopen the page."));
+    }
+
+    private void ShowNavigationError(string message)
+    {
+        NetworkErrorText.Text = message;
+        NetworkErrorPanel.Visibility = Visibility.Visible;
+    }
+
+    private void RetryNavigation_Click(object sender, RoutedEventArgs e)
+    {
+        NetworkErrorPanel.Visibility = Visibility.Collapsed;
+        if (Browser.CoreWebView2 is null)
+        {
+            ShowRuntimeError();
+            return;
+        }
+        Browser.CoreWebView2.Reload();
     }
 
     private void ShowRuntimeError()

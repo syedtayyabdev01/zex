@@ -38,6 +38,9 @@ class MainActivity : Activity() {
     private lateinit var progress: ProgressBar
     private lateinit var glassBar: LinearLayout
     private lateinit var playbackFallbackButton: TextView
+    private lateinit var networkErrorPanel: LinearLayout
+    private lateinit var networkErrorMessage: TextView
+    private val pageLoadTimeout = Runnable { showNetworkError("The website took too long to respond. Check your internet connection and try again.") }
     private val uiHandler = Handler(Looper.getMainLooper())
     private val hideGlassBarRunnable = Runnable { hideGlassBar() }
     private var revealingGlassBarTouch = false
@@ -72,13 +75,37 @@ class MainActivity : Activity() {
             CookieManager.getInstance().setAcceptCookie(true)
             CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
             webViewClient = object : WebViewClient() {
+                override fun onPageStarted(view: WebView, url: String, favicon: android.graphics.Bitmap?) {
+                    uiHandler.removeCallbacks(pageLoadTimeout)
+                    uiHandler.postDelayed(pageLoadTimeout, 30_000)
+                    if (::networkErrorPanel.isInitialized) networkErrorPanel.visibility = View.GONE
+                    if (::playbackFallbackButton.isInitialized) playbackFallbackButton.visibility = View.GONE
+                }
+
                 override fun onPageFinished(view: WebView, url: String) {
+                    uiHandler.removeCallbacks(pageLoadTimeout)
                     val host = Uri.parse(url).host.orEmpty().lowercase()
                     if (host == "zxcstream.com" || host.endsWith(".zxcstream.com")) {
                         addGithubToStayConnectedPopup()
                         hideUnsupportedPwaInstallOption()
                         updatePageChrome(url)
                         if (isMovieDetailsPage(Uri.parse(url))) detectPlaybackUnavailable()
+                    }
+                }
+
+                override fun onReceivedError(view: WebView, request: WebResourceRequest, error: android.webkit.WebResourceError) {
+                    super.onReceivedError(view, request, error)
+                    if (request.isForMainFrame) {
+                        uiHandler.removeCallbacks(pageLoadTimeout)
+                        showNetworkError(error.description?.toString() ?: "Unable to load the page.")
+                    }
+                }
+
+                override fun onReceivedHttpError(view: WebView, request: WebResourceRequest, response: android.webkit.WebResourceResponse) {
+                    super.onReceivedHttpError(view, request, response)
+                    if (request.isForMainFrame && response.statusCode >= 400) {
+                        uiHandler.removeCallbacks(pageLoadTimeout)
+                        showNetworkError("The website returned HTTP ${response.statusCode}. Please retry in a moment.")
                     }
                 }
 
@@ -166,9 +193,57 @@ class MainActivity : Activity() {
             Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL)
         fallbackParams.setMargins(dp(20), 0, dp(20), dp(94))
         root.addView(playbackFallbackButton, fallbackParams)
+        networkErrorMessage = TextView(this).apply {
+            text = "ZEX couldn't connect. Check your connection and try again."
+            textSize = 14f
+            gravity = Gravity.CENTER
+            setTextColor(Color.WHITE)
+            setPadding(dp(18), dp(8), dp(18), dp(12))
+        }
+        networkErrorPanel = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding(dp(22), dp(18), dp(22), dp(18))
+            background = rounded(Color.argb(245, 28, 28, 34), dp(20), Color.argb(150, 255, 255, 255))
+            elevation = dp(12).toFloat()
+            visibility = View.GONE
+            addView(TextView(this@MainActivity).apply {
+                text = "Connection problem"
+                textSize = 19f
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+                setTextColor(Color.WHITE)
+            })
+            addView(networkErrorMessage, LinearLayout.LayoutParams(-1, -2))
+            addView(TextView(this@MainActivity).apply {
+                text = "TRY AGAIN"
+                textSize = 14f
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+                gravity = Gravity.CENTER
+                setTextColor(Color.WHITE)
+                setPadding(dp(22), dp(12), dp(22), dp(12))
+                background = rounded(Color.rgb(190, 20, 30), dp(14), Color.TRANSPARENT)
+                isFocusable = true
+                setOnClickListener {
+                    visibility = View.GONE
+                    web.reload()
+                }
+            })
+        }
+        val errorParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+            Gravity.CENTER)
+        errorParams.setMargins(dp(28), 0, dp(28), 0)
+        root.addView(networkErrorPanel, errorParams)
         setContentView(root)
         setupNotifications()
         web.loadUrl(homeUrl)
+    }
+
+    private fun showNetworkError(message: String) {
+        if (!::networkErrorPanel.isInitialized) return
+        networkErrorMessage.text = message.take(240)
+        networkErrorPanel.visibility = View.VISIBLE
+        progress.visibility = View.GONE
     }
 
     private fun updatePageChrome(url: String) {
@@ -413,7 +488,7 @@ class MainActivity : Activity() {
         return super.onKeyDown(keyCode, event)
     }
 
-    override fun onDestroy() { uiHandler.removeCallbacks(hideGlassBarRunnable); web.destroy(); super.onDestroy() }
+    override fun onDestroy() { uiHandler.removeCallbacks(hideGlassBarRunnable); uiHandler.removeCallbacks(pageLoadTimeout); web.destroy(); super.onDestroy() }
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
     private fun toast(message: String) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }

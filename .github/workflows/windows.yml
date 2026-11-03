@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     tags: [pc-v*]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -20,7 +21,7 @@ jobs:
       - name: Publish Windows x64 app
         run: dotnet publish desktop/Zex.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o desktop/publish
       - name: Package app
-        run: Compress-Archive -Path desktop/publish/* -DestinationPath ZEX-PC-v0.1.0-win-x64.zip -Force
+        run: Compress-Archive -Path desktop/publish/* -DestinationPath ZEX-PC-v0.1.1-win-x64.zip -Force
       - uses: actions/upload-artifact@v4
         with:
           name: ZEX-PC-v0.1.0-win-x64
@@ -29,5 +30,5 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/pc-v')
         uses: softprops/action-gh-release@v2
         with:
-          name: ZEX PC V0.1.0
+          name: ZEX PC V0.1.1
           files: ZEX-PC-v0.1.0-win-x64.zip

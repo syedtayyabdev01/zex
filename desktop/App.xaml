@@ -4,6 +4,14 @@
              StartupUri="MainWindow.xaml"
              ShutdownMode="OnMainWindowClose">
     <Application.Resources>
+        <DrawingImage x:Key="ZexWindowIcon">
+            <DrawingImage.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="#E50914" Geometry="M 24,1 A 23,23 0 1 1 23.99,1 Z" />
+                    <GeometryDrawing Brush="White" Geometry="M 12,9 L 35,9 L 20,23 L 32,23 L 10,39 L 16,27 L 7,27 L 22,14 L 12,14 Z" />
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
         <SolidColorBrush x:Key="ZexRed" Color="#E50914" />
         <SolidColorBrush x:Key="WindowDark" Color="#101014" />
         <SolidColorBrush x:Key="TextPrimary" Color="#F7F7F8" />
