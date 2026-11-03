@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09090d">
+  <meta name="description" content="ZEX — lightweight clients for Android, Windows and iPhone. Get official builds and setup information.">
+  <title>ZEX — Watch on your devices</title>
+  <style>
+    :root{color-scheme:dark;--bg:#09090d;--panel:#121219;--line:#272731;--muted:#a3a3b2;--red:#f04452;--red2:#a91228;--white:#f8f8fb}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 75% 5%,rgba(180,20,42,.2),transparent 34%),var(--bg);color:var(--white);font:16px/1.6 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    a{color:inherit;text-decoration:none}.wrap{width:min(1120px,calc(100% - 40px));margin:auto}
+    header{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.07)}
+    .brand{display:flex;align-items:center;gap:11px;font-size:21px;font-weight:850;letter-spacing:.13em}.mark{width:35px;height:35px;display:grid;place-items:center;border-radius:11px;background:linear-gradient(145deg,#ff5864,#a80c26);box-shadow:0 7px 28px #e11d2e40;font-weight:950}
+    nav{display:flex;gap:26px;color:#c4c4cf;font-size:14px}nav a:hover,.muted-link:hover{color:white}
+    .top-cta,.primary{display:inline-flex;align-items:center;justify-content:center;gap:9px;background:linear-gradient(110deg,#f04452,#bd1833);color:white;border-radius:999px;padding:11px 18px;font-weight:750;box-shadow:0 10px 30px #d21e3530;transition:transform .2s,filter .2s}.top-cta:hover,.primary:hover{transform:translateY(-2px);filter:brightness(1.08)}
+    .hero{padding:100px 0 76px;display:grid;grid-template-columns:1.1fr .9fr;gap:55px;align-items:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:9px;color:#ff8992;font-size:12px;font-weight:800;letter-spacing:.17em;text-transform:uppercase}.dot{width:7px;height:7px;border-radius:50%;background:#ff5864;box-shadow:0 0 14px #ff5864}
+    h1{font-size:clamp(48px,7vw,82px);line-height:.99;letter-spacing:-.065em;margin:22px 0 22px;font-weight:900}h1 span{color:#ff5966}.lead{max-width:560px;color:#b6b6c3;font-size:18px;line-height:1.75}
+    .actions{display:flex;gap:13px;flex-wrap:wrap;margin-top:30px}.secondary{display:inline-flex;align-items:center;justify-content:center;border:1px solid #41414c;border-radius:999px;padding:10px 18px;font-weight:700;color:#e7e7ed}.secondary:hover{background:#ffffff0c}
+    .note{color:#81818f;font-size:12px;margin-top:18px}
+    .device-stage{position:relative;min-height:370px;display:grid;place-items:center}.glow{position:absolute;width:310px;height:310px;border-radius:50%;background:#c51c36;filter:blur(100px);opacity:.23}
+    .screen{position:relative;width:min(100%,390px);padding:13px;border:1px solid #ffffff24;border-radius:26px;background:linear-gradient(145deg,#24242d,#101016);box-shadow:0 35px 90px #0009;transform:rotate(3deg)}
+    .screen-top{display:flex;align-items:center;justify-content:space-between;padding:7px 7px 14px;color:#aaa;font-size:11px;letter-spacing:.12em}.screen-content{height:240px;border-radius:16px;background:radial-gradient(ellipse at 70% 15%,#a6223a99,transparent 48%),linear-gradient(140deg,#28121a,#111119 65%);display:flex;flex-direction:column;justify-content:flex-end;padding:23px;overflow:hidden}
+    .screen-content small{color:#ff9aa2;letter-spacing:.15em;font-weight:800}.screen-content strong{font-size:32px;line-height:1.05;letter-spacing:-.04em;margin-top:8px}.screen-content p{color:#c1b9c0;font-size:12px;margin-bottom:0}
+    .screen-bottom{display:flex;gap:8px;padding:13px 2px 1px}.mini{height:6px;border-radius:9px;background:#3b3b47;flex:1}.mini:first-child{background:#f04452}
+    .section{padding:48px 0 88px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:25px}.kicker{color:#ff7782;font-size:11px;letter-spacing:.18em;font-weight:850;text-transform:uppercase}h2{font-size:clamp(30px,4vw,43px);letter-spacing:-.045em;margin:8px 0 0}.section-head p{color:var(--muted);max-width:430px;margin:0}
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.card{background:linear-gradient(145deg,#17171f,#101016);border:1px solid var(--line);border-radius:20px;padding:25px;min-height:230px;display:flex;flex-direction:column;transition:border-color .2s,transform .2s}.card:hover{border-color:#73313b;transform:translateY(-3px)}
+    .icon{width:43px;height:43px;border-radius:13px;background:#2a171d;color:#ff7883;display:grid;place-items:center;font-weight:900;font-size:19px}.card h3{font-size:20px;margin:17px 0 5px}.card p{color:var(--muted);font-size:14px;margin:0 0 22px}.card a{margin-top:auto;color:#ff7782;font-weight:750;font-size:14px}.card a:hover{color:#ffabb2}
+    .info{border:1px solid #34313a;background:linear-gradient(110deg,#17141a,#111117);border-radius:20px;padding:25px 28px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:25px}.info h3{margin:0 0 5px;font-size:19px}.info p{margin:0;color:var(--muted);font-size:14px}
+    footer{border-top:1px solid #24242d;padding:25px 0 36px;color:#888895;font-size:12px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.footer-links{display:flex;gap:20px}
+    @media(max-width:800px){.hero{grid-template-columns:1fr;padding:72px 0 45px;gap:20px}.device-stage{min-height:310px}.cards{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}.info{grid-template-columns:1fr}.info .secondary{justify-self:start}}
+    @media(max-width:560px){.wrap{width:min(100% - 28px,1120px)}header{height:66px}nav{display:none}.top-cta{padding:9px 13px;font-size:12px}.hero{padding-top:60px}h1{font-size:54px}.lead{font-size:16px}.device-stage{min-height:275px}.screen-content{height:200px}.section{padding-bottom:60px}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="#" aria-label="ZEX home"><span class="mark">Z</span><span>ZEX</span></a>
+      <nav aria-label="Main navigation"><a href="#downloads">Downloads</a><a href="#about">About</a><a href="https://github.com/syedtayyabdev01/zex" target="_blank" rel="noreferrer">Source code</a></nav>
+      <a class="top-cta" href="#downloads">Get the app <span aria-hidden="true">↗</span></a>
+    </header>
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Your screens. One experience.</div>
+          <h1>Meet your<br><span>ZEX.</span></h1>
+          <p class="lead">A lightweight cross-device client experience for Android, Windows and iPhone. Choose your device, get the available build, and follow the setup notes.</p>
+          <div class="actions"><a class="primary" href="#downloads">Explore downloads <span aria-hidden="true">↓</span></a><a class="secondary" href="https://zxcstream.com/" target="_blank" rel="noreferrer">Open ZEX service ↗</a></div>
+          <p class="note">Client availability and playback features depend on the connected website and its authorized providers.</p>
+        </div>
+        <div class="device-stage" aria-label="ZEX app preview illustration">
+          <div class="glow"></div>
+          <div class="screen">
+            <div class="screen-top"><strong>ZEX PLAYER</strong><span>CONNECTED EXPERIENCE</span></div>
+            <div class="screen-content"><small>ONE EXPERIENCE</small><strong>Entertainment<br>on your terms.</strong><p>Designed for the screens you use every day.</p></div>
+            <div class="screen-bottom"><span class="mini"></span><span class="mini"></span><span class="mini"></span></div>
+          </div>
+        </div>
+      </section>
+      <section class="section" id="downloads">
+        <div class="section-head"><div><div class="kicker">Choose your platform</div><h2>Get ZEX on your device.</h2></div><p>Open the official GitHub release page to view available files, version notes and installation details.</p></div>
+        <div class="cards">
+          <article class="card"><div class="icon" aria-hidden="true">A</div><h3>Android & Android TV</h3><p>Phone, tablet and Android TV builds. Review the release notes and install guidance before sideloading.</p><a href="https://github.com/syedtayyabdev01/zex/releases/tag/v0.4" target="_blank" rel="noreferrer">View Android release ↗</a></article>
+          <article class="card"><div class="icon" aria-hidden="true">W</div><h3>Windows PC</h3><p>Windows 10/11 x64 desktop client. WebView2 Runtime may be required on your PC.</p><a href="https://github.com/syedtayyabdev01/zex/releases/tag/pc-v0.1.0" target="_blank" rel="noreferrer">View Windows release ↗</a></article>
+          <article class="card"><div class="icon" aria-hidden="true">i</div><h3>iPhone test build</h3><p>Unsigned iOS test package. Installation requires a compatible signing or sideloading method.</p><a href="https://github.com/syedtayyabdev01/zex/releases/tag/ios-v0.1.5" target="_blank" rel="noreferrer">View iOS release ↗</a></article>
+        </div>
+      </section>
+      <section class="section" id="about" style="padding-top:0">
+        <div class="info"><div><h3>Built in the open.</h3><p>Browse the source, report a problem, or check the latest releases on GitHub. ZEX clients display the connected service; they do not host its catalogue or playback servers.</p></div><a class="secondary" href="https://github.com/syedtayyabdev01/zex" target="_blank" rel="noreferrer">Visit GitHub ↗</a></div>
+      </section>
+    </main>
+    <footer><span>© <span id="year">2026</span> ZEX. Cross-device clients.</span><div class="footer-links"><a href="https://github.com/syedtayyabdev01/zex/releases" target="_blank" rel="noreferrer">All releases</a><a href="https://github.com/syedtayyabdev01/zex" target="_blank" rel="noreferrer">GitHub</a><a href="https://zxcstream.com/" target="_blank" rel="noreferrer">Service</a></div></footer>
+  </div>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
