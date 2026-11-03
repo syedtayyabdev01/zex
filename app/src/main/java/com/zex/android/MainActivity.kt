@@ -10,6 +10,8 @@ import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.content.pm.PackageManager
 import android.view.Gravity
 import android.view.KeyEvent
@@ -35,6 +37,9 @@ class MainActivity : Activity() {
     private lateinit var web: WebView
     private lateinit var progress: ProgressBar
     private lateinit var glassBar: LinearLayout
+    private val uiHandler = Handler(Looper.getMainLooper())
+    private val hideGlassBarRunnable = Runnable { hideGlassBar() }
+    private var revealingGlassBarTouch = false
     private var customView: View? = null
     private var customViewCallback: WebChromeClient.CustomViewCallback? = null
     private val homeUrl = "https://zxcstream.com/"
@@ -55,7 +60,7 @@ class MainActivity : Activity() {
             settings.allowContentAccess = false
             settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_NEVER_ALLOW
             settings.useWideViewPort = true
-            settings.loadWithOverviewMode = true
+            settings.loadWithOverviewMode = false
             isFocusable = true
             isFocusableInTouchMode = true
             CookieManager.getInstance().setAcceptCookie(true)
@@ -65,6 +70,8 @@ class MainActivity : Activity() {
                     val host = Uri.parse(url).host.orEmpty().lowercase()
                     if (host == "zxcstream.com" || host.endsWith(".zxcstream.com")) {
                         addGithubToStayConnectedPopup()
+                        hideUnsupportedPwaInstallOption()
+                        updatePageChrome(url)
                     }
                 }
 
@@ -73,7 +80,10 @@ class MainActivity : Activity() {
                     if (uri.scheme != "https") return true
                     if (!request.isForMainFrame) return false
                     val host = uri.host.orEmpty().lowercase()
-                    if (host == "zxcstream.com" || host.endsWith(".zxcstream.com")) return false
+                    if (host == "zxcstream.com" || host.endsWith(".zxcstream.com")) {
+                        if (isMovieDetailsPage(uri)) hideGlassBar()
+                        return false
+                    }
                     try { startActivity(Intent(Intent.ACTION_VIEW, uri)) } catch (_: ActivityNotFoundException) { }
                     return true
                 }
@@ -88,6 +98,7 @@ class MainActivity : Activity() {
                     customView = view
                     customViewCallback = callback
                     root.addView(view, FrameLayout.LayoutParams(-1, -1))
+                    uiHandler.removeCallbacks(hideGlassBarRunnable)
                     glassBar.visibility = View.GONE
                     window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_FULLSCREEN or
                         View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
@@ -95,6 +106,28 @@ class MainActivity : Activity() {
                         View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN)
                 }
                 override fun onHideCustomView() { hideCustomVideo() }
+            }
+            setOnTouchListener { _, event ->
+                if (customView != null) return@setOnTouchListener false
+                when (event.actionMasked) {
+                    android.view.MotionEvent.ACTION_DOWN -> {
+                        revealingGlassBarTouch = glassBar.visibility != View.VISIBLE && event.y <= dp(18)
+                        if (revealingGlassBarTouch) {
+                            showGlassBar(requestFocus = false)
+                            true
+                        } else {
+                            hideGlassBar()
+                            false
+                        }
+                    }
+                    android.view.MotionEvent.ACTION_UP,
+                    android.view.MotionEvent.ACTION_CANCEL -> {
+                        val consumed = revealingGlassBarTouch
+                        revealingGlassBarTouch = false
+                        consumed
+                    }
+                    else -> revealingGlassBarTouch
+                }
             }
         }
         root.addView(web, FrameLayout.LayoutParams(-1, -1))
@@ -112,6 +145,42 @@ class MainActivity : Activity() {
         setContentView(root)
         setupNotifications()
         web.loadUrl(homeUrl)
+    }
+
+    private fun updatePageChrome(url: String) {
+        val uri = Uri.parse(url)
+        if (isMovieDetailsPage(uri)) {
+            hideGlassBar()
+            return
+        }
+        showGlassBar(requestFocus = false)
+        web.evaluateJavascript(
+            "!!document.querySelector('video') || /you're watching|main server|backup i/i.test(document.body.innerText || '')"
+        ) { result -> if (result == "true") hideGlassBar() }
+    }
+
+    private fun isMovieDetailsPage(uri: Uri): Boolean {
+        val segments = uri.pathSegments.filter { it.isNotBlank() }
+        val first = segments.firstOrNull()?.lowercase() ?: return false
+        if (first in setOf("watch", "player", "detail", "details")) return true
+        if (first in setOf("movie", "tv", "series") && segments.size > 1) return true
+        val hasItemId = uri.queryParameterNames.any { it.lowercase() in setOf("id", "video", "title_id") }
+        return hasItemId && first in setOf("movie", "tv", "series", "watch")
+    }
+
+    private fun showGlassBar(requestFocus: Boolean) {
+        if (customView != null) return
+        uiHandler.removeCallbacks(hideGlassBarRunnable)
+        glassBar.visibility = View.VISIBLE
+        if (requestFocus) glassBar.getChildAt(0)?.requestFocus()
+        uiHandler.postDelayed(hideGlassBarRunnable, 2_500)
+    }
+
+    private fun hideGlassBar() {
+        uiHandler.removeCallbacks(hideGlassBarRunnable)
+        if (!::glassBar.isInitialized || customView != null) return
+        if (glassBar.hasFocus()) web.requestFocus()
+        glassBar.visibility = View.GONE
     }
 
     private fun addGithubToStayConnectedPopup() {
@@ -169,6 +238,34 @@ class MainActivity : Activity() {
         web.evaluateJavascript(script, null)
     }
 
+    private fun hideUnsupportedPwaInstallOption() {
+        val script = """
+            (function() {
+              if (window.__zexInstallFilterInstalled) return;
+              window.__zexInstallFilterInstalled = true;
+              function hideInstallAction() {
+                Array.from(document.querySelectorAll('button')).forEach(function(button) {
+                  if ((button.innerText || '').trim().toLowerCase() !== 'install') return;
+                  var menu = button.parentElement;
+                  var menuText = (menu && menu.innerText || '').toLowerCase();
+                  if (!menu || menuText.indexOf('library') < 0 || menuText.indexOf('settings') < 0) return;
+                  button.style.display = 'none';
+                  button.setAttribute('aria-hidden', 'true');
+                  button.tabIndex = -1;
+                });
+              }
+              document.addEventListener('click', function(event) {
+                var button = event.target.closest && event.target.closest('button');
+                if (button && (button.innerText || '').trim().toLowerCase() === 'more') {
+                  window.setTimeout(hideInstallAction, 0);
+                }
+              }, true);
+              window.setTimeout(hideInstallAction, 0);
+            })();
+        """.trimIndent()
+        web.evaluateJavascript(script, null)
+    }
+
     private fun createGlassBar(): LinearLayout = LinearLayout(this).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
@@ -180,13 +277,13 @@ class MainActivity : Activity() {
         ).apply { cornerRadius = dp(32).toFloat(); setStroke(dp(1), Color.argb(150, 255, 255, 255)) }
         elevation = dp(5).toFloat()
         val brand = TextView(this@MainActivity).apply {
-            text = "ZEX"; textSize = 24f; typeface = android.graphics.Typeface.DEFAULT_BOLD
+            text = "ZEX"; textSize = if (compact) 22f else 24f; typeface = android.graphics.Typeface.DEFAULT_BOLD
             setTextColor(Color.rgb(229, 9, 20)); gravity = Gravity.CENTER
             contentDescription = "ZEX home"
             setOnClickListener { web.loadUrl(homeUrl) }
             isFocusable = true; isFocusableInTouchMode = false
         }
-        addView(brand, LinearLayout.LayoutParams(dp(if (compact) 54 else 70), -1))
+        addView(brand, LinearLayout.LayoutParams(dp(if (compact) 68 else 80), -1))
         val divider = View(this@MainActivity).apply { setBackgroundColor(Color.argb(60, 255, 255, 255)) }
         addView(divider, LinearLayout.LayoutParams(dp(1), dp(30)).apply { marginStart = dp(8); marginEnd = dp(8) })
         addView(glassAction("⌂", "Home", compact) { web.loadUrl(homeUrl) })
@@ -242,7 +339,7 @@ class MainActivity : Activity() {
         val view = customView ?: return
         (view.parent as? ViewGroup)?.removeView(view)
         customView = null
-        glassBar.visibility = View.VISIBLE
+        hideGlassBar()
         customViewCallback?.onCustomViewHidden(); customViewCallback = null
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
     }
@@ -253,6 +350,14 @@ class MainActivity : Activity() {
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_MENU && customView == null) {
+            showGlassBar(requestFocus = true)
+            return true
+        }
+        if (keyCode in setOf(KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT,
+                KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER) && !glassBar.hasFocus()) {
+            hideGlassBar()
+        }
         if (keyCode == KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE || keyCode == KeyEvent.KEYCODE_MEDIA_PLAY) {
             web.evaluateJavascript("document.querySelector('video')?.play()", null); return true
         }
@@ -262,7 +367,7 @@ class MainActivity : Activity() {
         return super.onKeyDown(keyCode, event)
     }
 
-    override fun onDestroy() { web.destroy(); super.onDestroy() }
+    override fun onDestroy() { uiHandler.removeCallbacks(hideGlassBarRunnable); web.destroy(); super.onDestroy() }
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
     private fun toast(message: String) = Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
 }

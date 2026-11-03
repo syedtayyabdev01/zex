@@ -6,7 +6,9 @@ ZEX is a lightweight Android WebView app for `https://zxcstream.com/`, with a re
 
 - One APK supports phones, tablets, and Android TV. TV launch and touchscreen-optional support are declared in the manifest.
 - Use a TV remote's directional pad to focus the glass controls and the site's own controls. Play/pause media keys are passed to the page's active video element.
-- The app bar provides Home, Reload, and Back controls with visible remote focus treatment.
+- The compact glass controls auto-hide during page use and movie playback so they don't cover titles or player controls. Tap the very top edge on a phone, or press Menu on a TV remote, to reveal them briefly.
+- The WebView uses the site's responsive viewport without overview zoom, so its layout can use the available phone or TV width. The compact ZEX wordmark stays on one line on phones.
+- The site-only PWA `Install` item is hidden inside the Android WebView, where browser install prompts aren't supported. The website's normal install option remains available in a supported browser.
 - Web video fullscreen is supported. HTTPS-only navigation stays within `zxcstream.com`; other HTTPS links are handed to the system browser.
 - In the site's "Stay Connected" popup, ZEX links to its Discord server, Telegram channel, and GitHub repository.
 - A low-power daily reminder and GitHub release check run on a 24-hour WorkManager interval. A newer release gets one update alert; installing an app update also shows a confirmation notification. Android may defer daily background work, and notifications require the user's notification permission.
