@@ -1,5 +1,8 @@
 .gradle/
 **/build/
+desktop/bin/
+desktop/obj/
+desktop/publish/
 .idea/
 local.properties
 *.jks
