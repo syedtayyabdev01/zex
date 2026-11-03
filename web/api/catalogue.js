@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     if (action === "details") {
       if (!/^\\d+$/.test(String(id))) return json(res, 400, { error: "A valid title ID is required." });
       const kind = type === "tv" ? "tv" : "movie";
-      const data = await tmdb("/" + kind + "/" + id + "?append_to_response=videos,credits,watch%2Fproviders");
+      const data = await tmdb("/" + kind + "/" + id + "?append_to_response=videos,credits");
       return json(res, 200, data);
     }
     if (action === "season") {
