@@ -7,6 +7,8 @@ android {
     namespace = "com.zex.android"
     compileSdk = 35
 
+    buildFeatures { buildConfig = true }
+
     defaultConfig {
         applicationId = "com.zex.android"
         minSdk = 23
