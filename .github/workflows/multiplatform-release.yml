@@ -1,0 +1,113 @@
+name: ZEX Multi-platform Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag to publish (for example v0.5.0)"
+        required: true
+        default: "v0.5.0"
+
+permissions:
+  contents: write
+
+env:
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag || github.ref_name }}
+
+jobs:
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag || github.ref }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-35 build-tools;35.0.0"
+      - name: Build release APK
+        run: ./gradlew assembleRelease
+      - name: Prepare release asset
+        run: cp app/build/outputs/apk/release/app-release-unsigned.apk "ZEX-Android-${RELEASE_TAG}-UNSIGNED.apk"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZEX-Android-APK
+          path: ZEX-Android-*-UNSIGNED.apk
+
+  windows:
+    name: Build Windows x64 app
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag || github.ref }}
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Publish Windows x64 app
+        run: dotnet publish desktop/Zex.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o desktop/publish
+      - name: Package app
+        shell: pwsh
+        run: Compress-Archive -Path desktop/publish/* -DestinationPath "ZEX-PC-${{ env.RELEASE_TAG }}-win-x64.zip" -Force
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZEX-Windows-x64
+          path: ZEX-PC-*-win-x64.zip
+
+  ios:
+    name: Build unsigned iOS IPA
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag || github.ref }}
+      - name: Build unsigned iPhone app
+        run: xcodebuild -project ios/ZEX.xcodeproj -scheme ZEX -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build/derived CODE_SIGNING_ALLOWED=NO build
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p build/Payload
+          cp -R build/derived/Build/Products/Release-iphoneos/ZEX.app build/Payload/ZEX.app
+          cd build
+          zip -qr "../ZEX-iOS-${RELEASE_TAG}-UNSIGNED.ipa" Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ZEX-iOS-unsigned-IPA
+          path: ZEX-iOS-*-UNSIGNED.ipa
+
+  publish:
+    name: Publish GitHub Release
+    needs: [android, windows, ios]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all platform builds
+        uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+      - name: Publish one combined release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: ZEX Multi-platform ${{ env.RELEASE_TAG }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## ZEX multi-platform builds
+
+            - Android: unsigned release APK (requires signing for normal Play Store distribution).
+            - Windows: self-contained Windows x64 ZIP.
+            - iOS: unsigned test IPA (requires Apple signing/provisioning before normal device installation).
+
+            All three platform builds must succeed before this release is published.
+          files: |
+            release-assets/ZEX-Android-*-UNSIGNED.apk
+            release-assets/ZEX-PC-*-win-x64.zip
+            release-assets/ZEX-iOS-*-UNSIGNED.ipa
