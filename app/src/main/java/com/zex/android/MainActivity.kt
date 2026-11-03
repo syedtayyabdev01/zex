@@ -28,6 +28,7 @@ import android.widget.Toast
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 class MainActivity : Activity() {
@@ -60,6 +61,13 @@ class MainActivity : Activity() {
             CookieManager.getInstance().setAcceptCookie(true)
             CookieManager.getInstance().setAcceptThirdPartyCookies(this, true)
             webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView, url: String) {
+                    val host = Uri.parse(url).host.orEmpty().lowercase()
+                    if (host == "zxcstream.com" || host.endsWith(".zxcstream.com")) {
+                        addGithubToStayConnectedPopup()
+                    }
+                }
+
                 override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                     val uri = request.url
                     if (uri.scheme != "https") return true
@@ -104,6 +112,50 @@ class MainActivity : Activity() {
         setContentView(root)
         setupNotifications()
         web.loadUrl(homeUrl)
+    }
+
+    private fun addGithubToStayConnectedPopup() {
+        val githubUrl = JSONObject.quote("https://github.com/syedtayyabdev01/zex")
+        val script = """
+            (function() {
+              if (window.__zexSocialObserver) return;
+              function patchPopup() {
+                var dialogs = Array.from(document.querySelectorAll('[role="dialog"]'));
+                var dialog = dialogs.find(function(node) {
+                  return (node.innerText || '').indexOf('Stay Connected') !== -1;
+                });
+                if (!dialog) return false;
+                var links = Array.from(dialog.querySelectorAll('a[href]'));
+                var discord = links.find(function(a) { return /discord\.(com|gg)/i.test(a.href); });
+                var telegram = links.find(function(a) { return /(t\.me|telegram\.me)/i.test(a.href); });
+                var github = links.find(function(a) { return /facebook\.com/i.test(a.href); });
+                if (!discord || !telegram || !github) return false;
+
+                github.href = $githubUrl;
+                github.target = '_blank';
+                github.rel = 'noopener noreferrer';
+                github.title = 'GitHub';
+                github.setAttribute('aria-label', 'ZEX GitHub repository');
+                github.style.color = '#f5f5f7';
+                var label = github.querySelector('span');
+                if (label) label.textContent = 'GitHub';
+                var icon = github.querySelector('svg');
+                if (icon) {
+                  icon.setAttribute('viewBox', '0 0 24 24');
+                  icon.innerHTML = '<path fill="currentColor" d="M12 .8a11.2 11.2 0 0 0-3.54 21.83c.56.1.76-.24.76-.54v-1.95c-3.13.68-3.79-1.33-3.79-1.33-.5-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.12.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.23 3.27.94.1-.71.39-1.2.71-1.48-2.5-.29-5.13-1.25-5.13-5.57 0-1.23.44-2.24 1.16-3.03-.12-.29-.5-1.44.11-3 0 0 .94-.3 3.07 1.15a10.6 10.6 0 0 1 5.6 0c2.12-1.45 3.07-1.15 3.07-1.15.61 1.56.22 2.71.11 3 .72.79 1.15 1.8 1.15 3.03 0 4.33-2.64 5.28-5.15 5.56.4.35.76 1.04.76 2.1v3.11c0 .3.2.65.77.54A11.2 11.2 0 0 0 12 .8z"/>';
+                }
+                return true;
+              }
+              var observer = new MutationObserver(function() {
+                if (patchPopup()) observer.disconnect();
+              });
+              window.__zexSocialObserver = observer;
+              observer.observe(document.body, { childList: true });
+              if (patchPopup()) observer.disconnect();
+              window.setTimeout(function() { observer.disconnect(); }, 30000);
+            })();
+        """.trimIndent()
+        web.evaluateJavascript(script, null)
     }
 
     private fun createGlassBar(): LinearLayout = LinearLayout(this).apply {
