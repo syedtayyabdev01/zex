@@ -67,8 +67,8 @@ class MainActivity : Activity() {
             }
             webChromeClient = object : WebChromeClient() {
                 override fun onProgressChanged(view: WebView?, newProgress: Int) {
-                    progress.progress = newProgress
-                    progress.visibility = if (newProgress in 1..99) View.VISIBLE else View.GONE
+                    this@MainActivity.progress.setProgress(newProgress)
+                    this@MainActivity.progress.setVisibility(if (newProgress in 1..99) View.VISIBLE else View.GONE)
                 }
                 override fun onShowCustomView(view: View, callback: CustomViewCallback) {
                     if (customView != null) { callback.onCustomViewHidden(); return }
